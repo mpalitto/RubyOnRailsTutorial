@@ -128,3 +128,9 @@ and now we have them available to our view. We are going to show a table with al
 
 
 ```
+
+Restart the application... but there are no tasks in the DB at this point... we can add a task from the Console as we did earlier...
+
+Reload the page and... voila!
+
+## Step 5 Enter Task from GUI
