@@ -105,7 +105,7 @@ and now we have them available to our view. We are going to show a table with al
   <% if @tasks.empty? %>
     <span class="text-warning"> There are no tasks! </span>
   <% else %>
-    <table class="table table-hover table-bordered>
+    <table class="table table-hover table-bordered">
       <thead>
         <tr>
           <th> Title </th>
@@ -118,9 +118,13 @@ and now we have them available to our view. We are going to show a table with al
           <tr>
             <td><strong><%= task.title %></strong> </td>
             <td class="text-info" ><%= task.created_at %> </td>
-            <td class="text-success<%= task.completed %> </td>
+            <td class="text-success"<%= task.completed %> </td>
            </tr> 
+        <% end %>
       </tbody>
     </table>
-</div>
+  <% end %>
+</div>        
+
+
 ```
