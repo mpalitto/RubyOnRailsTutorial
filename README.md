@@ -47,3 +47,19 @@ From the Console ```Task.count``` which will return ```0``` since there is no da
 
 ```Task.count``` will return ```1```
 
+let's store the DB 1st task into a variable: ```task =  Task.first```
+
+Let's modify the 1st task: 
+```
+task.title =  'First task - edited'
+task.save
+```
+
+Let's verify the change: ```Task.first``` will print the task in the DB 
+
+```Task.count``` will return ```1```
+
+Let's Delete the task from the DB: ```task.destroy```
+
+```Task.count``` will return ```0```
+
