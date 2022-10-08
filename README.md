@@ -63,3 +63,64 @@ Let's Delete the task from the DB: ```task.destroy```
 
 ```Task.count``` will return ```0```
 
+## Step 4 Home Page
+
+The ```app/views/layouts/application.html.erb``` file is a layout meaning that you may use it to display content that you wish to be present to a lot (if not to all) of your application’s pages. Each page you create will be embedded at line 11. You may add whatever you want before & after the yield directive.
+
+create static pages controller now, from the Shell: ```rails generate controller pages```
+
+Add a "home action" in the generated controller pages_controller.rb which is located under app/controllers:
+```
+class PagesController < ApplicationController
+  def home
+  end
+end
+```
+
+Create the corresponding (empty) home page file home.html.erb under app/views/pages directory.
+
+Remove the comments from the routes.rb file which is located under the config directory and add the following line in order to have our home page being rendered as the root path of the application:
+
+```root to:  'pages#home'```
+
+In order to have the Boostrap magic enabled:
+1. rename the application.css file which is located under app/assets/stylesheets to application.css.scss
+2. add the following line to the bottom of the file:  ```@import  'bootstrap';```
+3. in application.js which is located under app/assets/javascript add  ```//= require bootstrap```
+before the line ```//= require_tree .```
+
+Done. Press ```Stop``` button and then ```Run``` button to restart the application
+
+Time to add some task functionality.
+
+In our home action of the pages controller we will keep all of our tasks in an instance variable named @tasks:
+```
+def home
+  @tasks = Task.all
+end
+```
+and now we have them available to our view. We are going to show a table with all the tasks and an appropriate message if none exists. Add the following to your home.html.haml:
+```
+<div class="container">
+  <% if @tasks.empty? %>
+    <span class="text-warning"> There are no tasks! </span>
+  <% else %>
+    <table class="table table-hover table-bordered>
+      <thead>
+        <tr>
+          <th> Title </th>
+          <th> Created at </th>
+          <th> Completed </th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @tasks.each do |task| %>
+          <tr>
+            <td><strong><%= task.title %></strong> </td>
+            <td class="text-info" ><%= task.created_at %> </td>
+            <td class="text-success<%= task.completed %> </td>
+           </tr> 
+      </tbody>
+    </table>
+</div>
+```
