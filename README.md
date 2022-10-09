@@ -67,6 +67,22 @@ Let's Delete the task from the DB: ```task.destroy```
 
 The ```app/views/layouts/application.html.erb``` file is a layout meaning that you may use it to display content that you wish to be present to a lot (if not to all) of your application’s pages. Each page you create will be embedded at line 11. You may add whatever you want before & after the yield directive.
 
+Let'a add the banner for our Webapp which will appear on all the pages... 
+```
+<div class="row-fluid">
+  <div class="span10 offset1">
+    <div class="hero-unit text-center">
+      <h1>
+        ToDo
+      </h1>
+      <p>
+        Welcome to the tutorial's ToDo application
+      </p>
+    </div>
+  </div>
+</div>
+```
+
 create static pages controller now, from the Shell: ```rails generate controller pages```
 
 Add a "home action" in the generated controller pages_controller.rb which is located under app/controllers:
@@ -99,34 +115,40 @@ def home
   @tasks = Task.all
 end
 ```
-and now we have them available to our view. We are going to show a table with all the tasks and an appropriate message if none exists. Add the following to your home.html.haml:
+and now we have them available to our view. We are going to show a table with all the tasks and an appropriate message if none exists. Add the following to your home.html.erb:
 ```
 <div class="container">
   <% if @tasks.empty? %>
-    <span class="text-warning"> There are no tasks! </span>
+    <span class="text-warning">There are no tasks!</span>
   <% else %>
     <table class="table table-hover table-bordered">
       <thead>
         <tr>
-          <th> Title </th>
-          <th> Created at </th>
-          <th> Completed </th>
+          <th>Title</th>
+          <th>Created at</th>
+          <th>Completed</th>
         </tr>
       </thead>
       <tbody>
         <% @tasks.each do |task| %>
           <tr>
-            <td><strong><%= task.title %></strong> </td>
-            <td class="text-info" ><%= task.created_at %> </td>
-            <td class="text-success"<%= task.completed %> </td>
-           </tr> 
+            <td>
+              <strong>
+                <%= task.title %>
+              </strong>
+            </td>
+            <td class="text-info">
+              <%= task.created_at %>
+            </td>
+            <td class="text-success">
+              <%= task.completed %>
+            </td>
+          </tr>
         <% end %>
       </tbody>
     </table>
   <% end %>
-</div>        
-
-
+</div>
 ```
 
 Restart the application... but there are no tasks in the DB at this point... we can add a task from the Console as we did earlier...
@@ -206,3 +228,27 @@ end
 The new Task is stored into the ```@task``` instance variable.
 
 The corresponding view of the new action will be in the file ```new.js.erb``` which we will create it under app/views/tasks. 
+
+In order to get to the View ```new.js.erb``` we can add a "new" button in our banner... 
+
+update ```application.html.erb``` with the following
+```
+  <body>
+<div class="row-fluid">
+  <div class="span10 offset1">
+    <div class="hero-unit text-center">
+      <h1>
+        ToDo
+      </h1>
+      <p>
+        Welcome to the tutorial's ToDo application
+      </p>    <%= link_to 'New Task', new_task_path,  class:  'btn btn-primary' %>
+
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="modal"></div>
+    <%= yield %>
+  </body>
+  ```
+  By pressing the button "New Task" we will be requesting the new_task.erb view
