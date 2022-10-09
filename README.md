@@ -186,9 +186,23 @@ task      GET    /tasks/:id(.:format)         tasks#show
 ```
 as you can see the action ```index``` is removed
 
+
+## Step 6 Controller
 At this point we will need a task Controller to address all these actions
 
 from the Shell run ```rails generate controller tasks```
 
-## Step 6 Controller
+Rails creates the tasks controller (app/controllers/tasks_controller.rb)
+
+Let's enter the code for adding a NEW taks (tasks#new action). 
+
+In the tasks controller:
+```
+def new
+  @task = Task.new
+end
+```
 ## Step 7 Enter Task from GUI
+The new Task is stored into the ```@task``` instance variable.
+
+The corresponding view of the new action will be in the file ```new.js.erb``` which we will create it under app/views/tasks. 
