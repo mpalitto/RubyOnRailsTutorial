@@ -133,4 +133,62 @@ Restart the application... but there are no tasks in the DB at this point... we 
 
 Reload the page and... voila!
 
-## Step 5 Enter Task from GUI
+## Step 5 Routes
+In order to allow users to take some actions on the TASKs, Rails offers a standardized way to handle that.
+
+In the file ```routes.rb``` we can list the resources... in this case we can name the resource ```tasks```   
+
+Add the following line ```resources :tasks``` in the ```routes.rb``` file.
+
+from the Shell run ```rails routes```
+```
+Prefix    Verb   URI Pattern                  Controller#Action
+root      GET    /                            pages#home
+tasks     GET    /tasks(.:format)             tasks#index
+          POST   /tasks(.:format)             tasks#create
+new_task  GET    /tasks/new(.:format)         tasks#new
+edit_task GET    /tasks/:id/edit(.:format)    tasks#edit
+task      GET    /tasks/:id(.:format)         tasks#show
+          PATCH  /tasks/:id(.:format)         tasks#update
+          PUT    /tasks/:id(.:format)         tasks#update
+          DELETE /tasks/:id(.:format)         tasks#destroy
+```
+The difference here from ```pages``` and ```tasks``` is that ```pages``` is for STATIC pages like ```home```.
+
+```tasks``` is associated to the group of actions that can be taken on the TASKs.
+
+In automatic the list of actions are:
+```
+index
+create
+new
+edit
+show
+update
+destroy
+```
+
+However if we are intrested in only a few of them, we can EXCLUDE some:
+
+replace the line inserted into ```routes.rb``` with the following: ```resources :tasks,  except:  [:index]```
+
+from the Shell run ```rails routes```
+```
+Prefix    Verb   URI Pattern                  Controller#Action
+root      GET    /                            pages#home
+tasks     POST   /tasks(.:format)             tasks#create
+new_task  GET    /tasks/new(.:format)         tasks#new
+edit_task GET    /tasks/:id/edit(.:format)    tasks#edit
+task      GET    /tasks/:id(.:format)         tasks#show
+          PATCH  /tasks/:id(.:format)         tasks#update
+          PUT    /tasks/:id(.:format)         tasks#update
+          DELETE /tasks/:id(.:format)         tasks#destroy
+```
+as you can see the action ```index``` is removed
+
+At this point we will need a task Controller to address all these actions
+
+from the Shell run ```rails generate controller tasks```
+
+## Step 6 Controller
+## Step 7 Enter Task from GUI
