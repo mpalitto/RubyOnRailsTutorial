@@ -251,4 +251,22 @@ update ```application.html.erb``` with the following
     <%= yield %>
   </body>
   ```
-  By pressing the button "New Task" we will be requesting the new_task.erb view
+By pressing the button "New Task" we will be requesting the new_task.erb view
+
+update ```new_task.erb``` with the following
+
+```
+<div class="modal-header">
+  <h1>New Task</h1>
+</div>
+<%= simple_form_for @task, class: 'clearfix' do |f| %>
+  <div class="modal-body">
+    <%= f.input :title %>
+    <%= f.input :note %>
+    <%= f.input :completed %>
+  </div>
+  <div class="modal-footer">
+    <%= f.submit 'Save', class: 'btn btn-primary' %>
+  </div>
+<% end %>
+```
