@@ -270,3 +270,28 @@ update ```new_task.erb``` with the following
   </div>
 <% end %>
 ```
+Let's make it fancier
+
+replace
+```
+    <%= f.submit 'Save', class: 'btn btn-primary' %>
+```
+with
+```
+<%= f.input :completed, as: :string, input_html: {class: 'datepicker'} %>
+```
+We will need a new gem, so add it to the end of your Gemfile:
+```
+gem  'bootstrap-datepicker-rails'
+```
+Edit application.css.scss which is under app/assets/stylesheets and add the following before line  ```*= require_tree .```
+
+```
+*=  require bootstrap-datepicker
+```
+Edit application.js and add the following before line ```*//= require_tree .*```
+
+```
+//= require bootstrap-datepicker
+```
+Now, we have to create a javascript function that will apply the datepicker behaviour of the gem to the appropriate inputs.
