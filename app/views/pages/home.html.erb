@@ -1,32 +1,4 @@
-<div class="container">
-  <% if @tasks.empty? %>
-    <span class="text-warning">There are no tasks!</span>
-  <% else %>
-    <table class="table table-hover table-bordered">
-      <thead>
-        <tr>
-          <th>Title</th>
-          <th>Created at</th>
-          <th>Completed</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @tasks.each do |task| %>
-          <tr>
-            <td>
-              <strong>
-                <%= task.title %>
-              </strong>
-            </td>
-            <td class="text-info">
-              <%= task.created_at %>
-            </td>
-            <td class="text-success">
-              <%= task.completed %>
-            </td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
-  <% end %>
+<div class="container" id="task-list">
+  <%= render partial: 'tasks/task_list', locals: {tasks: @tasks} %>
 </div>
+<div class="modal fade" id="modal"></div>

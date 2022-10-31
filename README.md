@@ -326,3 +326,61 @@ def task_params
 end
 ```
 Here we defined the create action that creates the task and then redirects to the root path aka our home page. We also created the task_params private method so that we filter the params of the request in case someone tries to pass parameters that we don’t expect. We only allow values for the title, note and completed attributes of our model. There will be cases that your model will have attributes you don’t want to be set by the user and this is the way to control them.
+
+## Step 10 Working with PARTIALs
+From the Home Page we see the ToDo list. If we press the "New Task"  button the list will disappear and the "New Task Form" will show instead.
+
+Once the NEW Task has been saved, in order to show the updated ToDo list, we have to re-load the Home Page...
+
+Now we want to simply UPDATE the ToDo list on the current page, and show or hide the "New Task Form" when needed...
+
+In order to do this we will create a new PARTIAL file ```app/views/tasks/_task_list.html.erb```
+
+and we move the content previously entered into ```app/views/pages/home.html.erb```
+
+```
+<div class="container">
+  <% if @tasks.empty? %>
+    <span class="text-warning">There are no tasks!</span>
+  <% else %>
+    <table class="table table-hover table-bordered">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Created at</th>
+          <th>Completed</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @tasks.each do |task| %>
+          <tr>
+            <td>
+              <strong>
+                <%= task.title %>
+              </strong>
+            </td>
+            <td class="text-info">
+              <%= task.created_at %>
+            </td>
+            <td class="text-success">
+              <%= task.completed %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+</div>
+```
+The only difference is that we have replace the instance variable ```@tasks``` with the variable ```tasks```
+
+and now we replace the ```app/views/pages/home.html.erb``` content with
+```
+<div class="container" id="task-list">
+  <%= render partial: 'tasks/task_list', locals: {tasks: @tasks} %>
+</div>
+```
+As you can see we will call the Partial by passing the ```locals: {tasks: @tasks}```
+
+Refresh your browser, you should be having your home page displayed exactly as before, nothing changed as far as user experience is concerned. 
+
