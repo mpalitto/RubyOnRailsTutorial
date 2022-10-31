@@ -4,4 +4,6 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
  root "pages#home"
  resources :tasks
+ #get "tasks/new" => 'tasks#new', :as => :new
+
 end

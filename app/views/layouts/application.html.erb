@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>RailsRuby3</title>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <!--script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script-->
 
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
@@ -21,12 +21,11 @@
       </h1>
       <p>
         Welcome to the tutorial's ToDo application
-      </p>    
-      <%= link_to 'New Task', new_task_path,  class:  'btn btn-primary' %>
+      </p>   
+      <%= link_to 'New Task',  new_task_path,  class:  'btn btn-primary', remote: true  %>
     </div>
   </div>
 </div>
-<div class="modal fade" id="modal"></div>
 
     <%= yield %>
   </body>

@@ -14,6 +14,7 @@ Rails will generate all the basic folders and files
 Add into the Gemfile all needed gems
 
 ```
+gem 'jquery-rails'
 gem 'haml'
 gem 'sass-rails'
 gem 'bootstrap-sass', '~> 2.3.2.0'
@@ -102,7 +103,13 @@ Remove the comments from the routes.rb file which is located under the config di
 In order to have the Boostrap magic enabled:
 1. rename the application.css file which is located under app/assets/stylesheets to application.css.scss
 2. add the following line to the bottom of the file:  ```@import  'bootstrap';```
-3. in application.js which is located under app/assets/javascript add  ```//= require bootstrap```
+3. in application.js which is located under app/assets/javascript add
+```
+//= require jquery
+//= require jquery_ujs
+//= require bootstrap
+//= require bootstrap-modal
+```
 before the line ```//= require_tree .```
 
 Done. Press ```Stop``` button and then ```Run``` button to restart the application
@@ -251,9 +258,9 @@ update ```application.html.erb``` with the following
     <%= yield %>
   </body>
   ```
-By pressing the button "New Task" we will be requesting the new_task.erb view
+By pressing the button "New Task" we will be requesting the ```new_task.html.erb``` view
 
-update ```new_task.erb``` with the following
+update ```new_task.html.erb``` with the following
 
 ```
 <div class="modal-header">
@@ -299,7 +306,7 @@ Edit application.js and add the following before line ```*//= require_tree .*```
 ```
 Now, we have to create a javascript function that will apply the datepicker behaviour of the gem to the appropriate inputs.
 
-At the end of the ```new.html.erb``` add the following
+At the end of the ```new_task.html.erb``` add the following
 ```
 <script>
 
@@ -326,3 +333,113 @@ def task_params
 end
 ```
 Here we defined the create action that creates the task and then redirects to the root path aka our home page. We also created the task_params private method so that we filter the params of the request in case someone tries to pass parameters that we don’t expect. We only allow values for the title, note and completed attributes of our model. There will be cases that your model will have attributes you don’t want to be set by the user and this is the way to control them.
+
+## Step 10 Working with PARTIALs
+`partial` is: a re-usable part of code (imagine it as a part of a view) which you may embed into other partials/pages/layouts etc. So, if we have a part of a view that we want to use to other places too, we usually create a partial.
+
+From the Home Page we see the ToDo list. If we press the "New Task"  button the list will disappear and the "New Task Form" will show instead.
+
+Once the NEW Task has been saved, in order to show the updated ToDo list, we have to re-load the Home Page...
+
+Now we want to simply UPDATE the ToDo list on the current page, and show or hide the "New Task Form" when needed...
+
+In order to do this we will create a new PARTIAL file ```app/views/tasks/_task_list.html.erb```
+
+and we move the content previously entered into ```app/views/pages/home.html.erb```
+
+```
+<div class="container">
+  <% if @tasks.empty? %>
+    <span class="text-warning">There are no tasks!</span>
+  <% else %>
+    <table class="table table-hover table-bordered">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Created at</th>
+          <th>Completed</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @tasks.each do |task| %>
+          <tr>
+            <td>
+              <strong>
+                <%= task.title %>
+              </strong>
+            </td>
+            <td class="text-info">
+              <%= task.created_at %>
+            </td>
+            <td class="text-success">
+              <%= task.completed %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+</div>
+```
+The only difference is that we have replace the instance variable ```@tasks``` with the variable ```tasks```
+
+and now we replace the ```app/views/pages/home.html.erb``` content with
+```
+<div class="container" id="task-list">
+  <%= render partial: 'tasks/task_list', locals: {tasks: @tasks} %>
+</div>
+```
+As you can see we will call the Partial by passing the ```locals: {tasks: @tasks}```
+
+Refresh your browser, you should be having your home page displayed exactly as before, nothing changed as far as user experience is concerned. 
+
+We can use Partial for our "New Task Form"...
+
+Partial files start with an underscore so create a file named _new.html.erb under app/views/tasks directory and add the following contents:
+```
+<div class="modal-header">
+  <h1>New Task</h1>
+</div>
+<%= simple_form_for task, class: 'clearfix' do |f| %>
+  <div class="modal-body">
+    <%= f.input :title %>
+    <%= f.input :note %>
+    <%= f.input :completed, as: :string, input_html: {class: 'datepicker'} %>  </div>
+  <div class="modal-footer">
+    <%= f.submit 'Save', class: 'btn btn-primary' %>
+  </div>
+<% end %>
+<script>
+
+$( document ).ready(function() {
+    $('.datepicker').datepicker();
+});
+
+</script>
+```
+this is going to replace the file ```new_task.html.erb``` previously created.
+
+Since we want the form to show into a modal window, we update the ```pages/home.html.erb``` with the following code:
+```
+<div class="container" id="task-list">
+  <%= render partial: 'tasks/task_list', locals: {tasks: @tasks} %>
+</div>
+<div class="modal fade" id="modal"></div>
+```
+where we added the last line, which is an element in which will insert the modal window.
+
+When we press the "New Task" button, we want to run a Javascript which will insert the code into the before mentioned element...
+
+as for now when the button is pressed, we are going to call the "new" method into the tasks_controller.rb which by default is going to call the "tasks/new.html.erb" and eventually a "tasks/new.js.erb" file, however we want to dismiss this default behaviour and, call the "tasks/new.js.erb" file only...
+
+to do this we can specify the ```remote: true``` option in the button (found into the "application.html.erb" file)
+```
+<%= link_to 'New Task',  new_task_path,  class:  'btn btn-primary', remote: true  %>
+```
+
+At this point the only thing left to do is to write the jQuery script which will insert the Partial into the modal window (in the "tasks/new.js.erb"):
+```
+m = $('#modal');
+m.html('<%= j(render partial: 'new', locals: {task: @task}) %>');
+m.modal('show');
+```
