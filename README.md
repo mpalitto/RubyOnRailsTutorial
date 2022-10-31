@@ -309,3 +309,20 @@ $( document ).ready(function() {
 
 </script>
 ```
+## Step 9 Create a New Task 
+
+Since this form was created for the @task instance variable of the controller and since that ```@task``` does not exist, but it is a new one, its action (the form’s action) has automatically been resolved to the CREATE action of the controller.
+
+Thus we need to add the ```create``` function in the TASK Controller (app/controllers/tasks_controller.rb)...
+
+```
+def create
+  @task = Task.create(task_params)
+  redirect_to root_path
+end
+private
+def task_params
+  params.require(:task).permit(:title, :note, :completed)
+end
+```
+Here we defined the create action that creates the task and then redirects to the root path aka our home page. We also created the task_params private method so that we filter the params of the request in case someone tries to pass parameters that we don’t expect. We only allow values for the title, note and completed attributes of our model. There will be cases that your model will have attributes you don’t want to be set by the user and this is the way to control them.
