@@ -270,6 +270,9 @@ update ```new_task.erb``` with the following
   </div>
 <% end %>
 ```
+
+## Step 8 Enter Task from GUI with DATE PICKER
+
 Let's make it fancier
 
 replace
@@ -295,3 +298,14 @@ Edit application.js and add the following before line ```*//= require_tree .*```
 //= require bootstrap-datepicker
 ```
 Now, we have to create a javascript function that will apply the datepicker behaviour of the gem to the appropriate inputs.
+
+At the end of the ```new.html.erb``` add the following
+```
+<script>
+
+$( document ).ready(function() {
+    $('.datepicker').datepicker();
+});
+
+</script>
+```
