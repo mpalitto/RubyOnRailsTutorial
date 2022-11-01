@@ -443,3 +443,20 @@ m = $('#modal');
 m.html('<%= j(render partial: 'new', locals: {task: @task}) %>');
 m.modal('show');
 ```
+When the "Save" button is pressed the action "create" get called which so far all it does is to insert the new record into the DB and reload the Home Page.
+
+However we can modify this and update the list into the page without reloading the whole page.
+
+First thing is to modify the "_new.html.erb" and add the "remote: true" as option in the FORM declaration ```<%= simple_form_for task, class: 'clearfix', remote: true  do |f| %>``` this will prevent the call to "tasks/create.html.erb", next remove the "redirect_to" instruction from the controller and replace it with ```@tasks = Task.all``` for updating the ToDo list.
+```
+def create
+  @task = Task.create(task_params)
+  @tasks = Task.all
+end
+```
+last we add the "create.js.erb" file which will update the list onto the page:
+```
+$('#task-list').html('<%= j(render partial: 'tasks/task_list', locals: {tasks: @tasks}) %>');
+$('#modal').modal('hide');
+```
+## Step 11 deeleting a ToDo

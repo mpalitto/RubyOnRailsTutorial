@@ -1,1 +1,3 @@
-$('#task-list').html('<%= j(render partial: 'tasks/task_list', locals: {tasks: @tasks}) %>');
+$('#task-list').html('<%= j(puts "Matteo --> destroy: " + params[:id]) %>');
+$('#task-list').html('<%= j(Task.find(params[:id]).destroy) %>');
+$('#task-list').html('<%= j(render partial: 'tasks/task_list', locals: {tasks: Task.all}) %>');
