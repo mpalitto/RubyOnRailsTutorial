@@ -1,4 +1,6 @@
 # RubyOnRailsTutorial
+by Prof. Palitto
+
 Learning RoR using Replit
 ## References
 https://iridakos.com/programming/2013/12/07/creating-a-simple-todo-part-1
@@ -165,7 +167,7 @@ Reload the page and... voila!
 ## Step 5 Routes
 In order to allow users to take some actions on the TASKs, Rails offers a standardized way to handle that.
 
-In the file ```routes.rb``` we can list the resources... in this case we can name the resource ```tasks```   
+In the file ```routes.rb``` we can list the resources... in this case we can name the resources ```tasks```   
 
 Add the following line ```resources :tasks``` in the ```routes.rb``` file.
 
@@ -185,6 +187,9 @@ task      GET    /tasks/:id(.:format)         tasks#show
 The difference here from ```pages``` and ```tasks``` is that ```pages``` is for STATIC pages like ```home```.
 
 ```tasks``` is associated to the group of actions that can be taken on the TASKs.
+
+NOTE: since we spelled "resources" as plural, all but some of the routes generated require ":id"... If we spelled "resource" as singular, all routes generated would not require the ":id"
+
 
 In automatic the list of actions are:
 ```
@@ -442,4 +447,40 @@ At this point the only thing left to do is to write the jQuery script which will
 m = $('#modal');
 m.html('<%= j(render partial: 'new', locals: {task: @task}) %>');
 m.modal('show');
+```
+When the "Save" button is pressed the action "create" get called which so far all it does is to insert the new record into the DB and reload the Home Page.
+
+However we can modify this and update the list into the page without reloading the whole page.
+
+First thing is to modify the "_new.html.erb" and add the "remote: true" as option in the FORM declaration ```<%= simple_form_for task, class: 'clearfix', remote: true  do |f| %>``` this will prevent the call to "tasks/create.html.erb", next remove the "redirect_to" instruction from the controller and replace it with ```@tasks = Task.all``` for updating the ToDo list.
+```
+def create
+  @task = Task.create(task_params)
+  @tasks = Task.all
+end
+```
+last we add the "create.js.erb" file which will update the list onto the page:
+```
+$('#task-list').html('<%= j(render partial: 'tasks/task_list', locals: {tasks: @tasks}) %>');
+$('#modal').modal('hide');
+```
+## Step 11 deleting a ToDo
+
+One of the routes made available is "DELETE tasks/:id(.:format) tasks#destroy"
+
+which we can make use... it means that
+
+in the "_task_list.html.erb" partial file, we can add a new column in the table which displays a "x" symble and when is pressed calls that route
+```
+<td class="text-success">
+  <%= link_to task_path(task), method: :delete, remote: true, data: {confirm: "Are you sure you want to delete task #{task.title}?"} do %>  <i class="icon-remove"></i><% end %>
+</td>
+```
+in the "task_controller" before the "private" statement
+```
+def destroy
+  puts "Matteo --> Remove ToDo"
+  Task.find(params[:id]).destroy
+  @tasks = Task.all
+end
 ```
