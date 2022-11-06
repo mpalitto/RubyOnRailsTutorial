@@ -13,11 +13,18 @@
 ActiveRecord::Schema.define(version: 2022_10_08_081002) do
 
   create_table "tasks", force: :cascade do |t|
-    t.string "title"
-    t.text "note"
-    t.date "completed"
+    t.string "titolo"
+    t.string "interno"
+    t.string "contatto"
+    t.text "descrizione"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "stato"
+    t.int "stima_durata"
+    t.int "preventivo"
+    t.datetime "inizio_lavori", precision: 6, null: false
+    t.int "costo_effettivo"
+    t.date "completed"
   end
 
 end

@@ -1,3 +1,8 @@
+# Richiesta di Manutenzione
+Utilizzo il codice del tutorial per creare una lista di richieste di manutenzione.
+
+In particolare il FORM nella finestra **modal** dovrà essere aggiornato per includere le seguenti informazioni, così anche come dovrà essere modificato il DB.
+
 # RubyOnRailsTutorial
 by Prof. Palitto
 
