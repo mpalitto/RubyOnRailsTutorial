@@ -7,5 +7,6 @@ Rails.application.routes.draw do
     get 'clear', on: :member
   end
   resources :tasks,  except:  [:index, :show] 
+  resources :stati_richiesta,  except:  [:index, :show] 
 
 end

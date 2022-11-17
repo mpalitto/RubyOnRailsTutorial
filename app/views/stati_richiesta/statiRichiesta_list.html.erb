@@ -1,0 +1,30 @@
+<div class="container">
+  <% if !stati %>
+    <span class="text-warning">Non è stato definito alcun stato!</span>
+  <% else %>
+    <table class="table table-hover table-bordered">
+      <thead>
+        <tr>
+          <th>Stato</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% statiRichiesta.each do |stato| %>
+          <tr>
+            <td>
+              <strong>
+                <%= stato.nome %>
+              </strong>
+            </td>
+            <td class="text-success">
+              <%= link_to stato_path(stato), method: :delete, remote: true, data: {confirm: "Are you sure you want to delete task #{stato.nome}?"} do %>  <i class="icon-remove"></i><% end %>
+                
+            </td>
+            
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+</div>

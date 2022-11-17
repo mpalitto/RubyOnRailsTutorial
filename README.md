@@ -1,3 +1,37 @@
+
+# Richiesta di Manutenzione
+Utilizzo il codice del tutorial per creare una lista di richieste di manutenzione.
+
+In particolare il FORM nella finestra **modal** dovrà essere aggiornato per includere le seguenti informazioni, così anche come dovrà essere modificato il DB.
+
+La richiesta dovrà essere eseguita per un appartamento e quindi dovremo aggiungere alla nostra tabella TASKs l'**interno**
+
+`bin/rails generate migration AddInternoToTasks interno:string`
+
+il **contatto** che identifica la persona che inserisce la richiesta
+
+`bin/rails generate migration AddContttoToTasks contatto:string`
+
+il campo **notes** viene rinominato **richiesta** che contiene il testo con la descrizione dettagliata della richiesta
+1. `bin/rails generate migration FixColumnName` che genera il file `db/migrate/xxxxxxxxxx_fix_column_name.rb`
+2. edit il file
+```
+# db/migrate/xxxxxxxxxx_fix_column_name.rb
+class FixColumnName < ActiveRecord::Migration[7.0]
+  def change
+    rename_column :tasks, :note, :richiesta
+  end
+end
+```
+
+lo **stato** della richiesta che può assumere solo alcuni valori
+
+i valori che **stato** può assumere saranno memorizzati in una tabella "statoRichiestaManutenzione" che ha una sola colonna "valoriPossibili" in cui memorizzare i vari valori possibili.
+
+`bin/rails generate model statoRichiestaManutenzione valoriPossibili:string`
+
+per inserire il select dato un oggetto: [esempio](https://www.linkedin.com/pulse/create-dynamic-select-tag-your-model-based-form-ruby-rails-josh-lee)
+
 # RubyOnRailsTutorial
 by Prof. Palitto
 

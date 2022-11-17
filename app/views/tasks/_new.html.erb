@@ -4,7 +4,7 @@
 <%= simple_form_for task, class: 'clearfix', remote: true  do |f| %>
   <div class="modal-body">
     <%= f.input :title %>
-    <%= f.input :note %>
+    <%= f.input :richiesta %>
     <%= f.input :completed, as: :string, input_html: {class: 'datepicker'} %>  </div>
   <div class="modal-footer">
     <%= f.submit 'Save', class: 'btn btn-primary' %>
