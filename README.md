@@ -23,7 +23,7 @@ class FixColumnName < ActiveRecord::Migration[7.0]
   end
 end
 ```
-
+### aggiunta di STATO nella nella LISTA delle richieste
 lo **stato** della richiesta che può assumere solo alcuni valori
 
 i valori che **stato** può assumere saranno memorizzati in una tabella "statoRichiestaManutenzione" che ha una sola colonna "valoriPossibili" in cui memorizzare i vari valori possibili.
@@ -31,6 +31,57 @@ i valori che **stato** può assumere saranno memorizzati in una tabella "statoRi
 `bin/rails generate model statoRichiestaManutenzione valoriPossibili:string`
 
 per inserire il select dato un oggetto: [esempio](https://www.linkedin.com/pulse/create-dynamic-select-tag-your-model-based-form-ruby-rails-josh-lee)
+
+1. aggiungo stato al DB delle richieste `bin/rails generate migration AddStatoToTasks stato:string`
+2. aggiorno il DB `rake db:migrate`
+3. nel partial **_task_list.html.erb** aggiungo una colonna alla tabella per mostrare lo stato
+```
+       <th>State</th>
+        ...
+       <td class="text-success">
+              <%= simple_form_for task, class: 'clearfix', remote: true  do |f| %>
+                <%= f.select(:stato, stati, {}, {:onchange => 'this.form.submit()', class: "form-control"}) %>
+              <% end %>
+         </td>
+ ```
+Visto che voglio dare la possibilità all'utente di cambiare lo stato dalla lista stessa...
+
+utilizzo come valore un select a cui vado a passare le varie opzioni disponibili per lo stato nella varibile `stati`
+
+visto che questo PARTIAL viene inizialmente chiamato dalla HOME PAGE **pages/home.html.erb**,
+
+devo modificare quest'ultimo file per fornire gli stati possibili ` <%= render partial: 'tasks/task_list', locals: {stati: @stati, tasks: @tasks} %>`
+
+e il controller **controllers/pages_controller.rb** deve fornire l'oggetto `@stati` nell'**action** `home`
+```
+class PagesController < ApplicationController
+  def home
+    @tasks = Task.all
+    statiPossibili = StatoRichiestaManutenzione.all
+    #statiPossibili.map {|s| puts "statiPossibili: #{s.valoriPossibili}"}
+    @stati = statiPossibili.map { |s| [s.valoriPossibili, s.valoriPossibili] }
+    #@stati.map {|s| puts "stati: #{s}"}
+  end
+end
+```
+visto che non ho ancora una UI per definire i vari **stati** (DA FARE DOPO), li posso inserire da riga di comando
+
+dalla **Shell** di **Replit** digito `rails c` per entrare nella **console**
+
+dalla **console** digito `StatoRichiestaManutenzione.all` che dovrebbe restituire un array vuoto `[]`
+
+per aggiungere il nuovo valore "new" `StatoRichiestaManutenzione.create(valoriPossibili: "new")`
+
+lo ripeto per i vari valori che ho deciso: `"Assegnata","Pianificata", "inLavorazione", "inAttesa", "inConsegna", "Completata", "nonAccettata"`
+
+a questo punto se digito `StatoRichiestaManutenzione.all` dovrebbe restituire un array NON vuoto
+
+NOTA: se avessi la necessita di eliminare una riga della tabella `StatoRichiestaManutenzione.find(id).destroy` dove **"id"** è l'indice(numero) che identifica la riga
+
+ATTENZIONE!!!
+La modifica sopra citata per la HOME PAGE **pages/home.html.erb** e il relativo **controller**: **controllers/pages_controller.rb** deve essere applicata a TUTTI i files 
+dove il partial **_task_list.html.erb** viene richiamato: **tasks/create.js.erb** **tasks/destroy.js.erb** e il relativo **controller**: **controllers/tasks_controller.rb** nelle **actions**
+interessate: `def create` e `def destroy.
 
 # RubyOnRailsTutorial
 by Prof. Palitto
