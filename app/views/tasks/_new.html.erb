@@ -6,6 +6,7 @@
     <%= f.input :title %>
     <%= f.input :richiesta %>
     <%= f.input :completed, as: :string, input_html: {class: 'datepicker'} %>  </div>
+    <%= f.hidden_field :stato, :value => "new" %>
   <div class="modal-footer">
     <%= f.submit 'Save', class: 'btn btn-primary' %>
   </div>
