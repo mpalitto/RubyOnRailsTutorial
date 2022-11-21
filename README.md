@@ -28,6 +28,8 @@ lo **stato** della richiesta che può assumere solo alcuni valori
 
 i valori che **stato** può assumere saranno memorizzati in una tabella "statoRichiestaManutenzione" che ha una sola colonna "valoriPossibili" in cui memorizzare i vari valori possibili.
 
+Questo permetterà di rendere i vari stati editabili (in futuro), cioè aggiungerne di nuovi, rimuoverne di non utili, o modificicare il nome...
+
 `bin/rails generate model statoRichiestaManutenzione valoriPossibili:string`
 
 per inserire il select dato un oggetto: [esempio](https://www.linkedin.com/pulse/create-dynamic-select-tag-your-model-based-form-ruby-rails-josh-lee)
@@ -82,6 +84,10 @@ ATTENZIONE!!!
 La modifica sopra citata per la HOME PAGE **pages/home.html.erb** e il relativo **controller**: **controllers/pages_controller.rb** deve essere applicata a TUTTI i files 
 dove il partial **_task_list.html.erb** viene richiamato: **tasks/create.js.erb** **tasks/destroy.js.erb** e il relativo **controller**: **controllers/tasks_controller.rb** nelle **actions**
 interessate: `def create` e `def destroy.
+
+Ultima cosa da assicurarsi per far funzionare il tutto è, che quando una nuova richiesta viene inserita venga anche inserito lo stato della richiesta come nuovo... questo si può realizzare facilmente inserendolo come **input nascosto** e assicurandosi che nel controller tra i paramentri ammessi ci sia ache lo **stato**
+
+
 
 # RubyOnRailsTutorial
 by Prof. Palitto
