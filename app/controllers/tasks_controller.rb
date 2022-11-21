@@ -15,16 +15,12 @@ def destroy
   puts "Matteo --> Remove ToDo"
   Task.find(params[:id]).destroy
   @tasks = Task.all
-  statiPossibili = StatoRichiestaManutenzione.all
-  @stati = statiPossibili.map { |s| [s.valoriPossibili, s.valoriPossibili] }
 end
 
 def create
   puts "Matteo --> Create New Task with params: #{task_params}"
   @task = Task.create(task_params)
   @tasks = Task.all
-  statiPossibili = StatoRichiestaManutenzione.all
-  @stati = statiPossibili.map { |s| [s.valoriPossibili, s.valoriPossibili] }
 end
 
 def update

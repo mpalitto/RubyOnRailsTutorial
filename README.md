@@ -87,6 +87,14 @@ interessate: `def create` e `def destroy.
 
 Ultima cosa da assicurarsi per far funzionare il tutto è, che quando una nuova richiesta viene inserita venga anche inserito lo stato della richiesta come nuovo... questo si può realizzare facilmente inserendolo come **input nascosto** e assicurandosi che nel controller tra i paramentri ammessi ci sia ache lo **stato**
 
+### Rimuovere la ridondanza nel codice
+Il codice così ottenuto è funzionale, ma non soddisfacente. Infatti ci sono parecchie ripetizioni che normalmente si vogliono evitare per una questione di gestibilità.
+
+Nel caso dovessi fare nel futuro dei cambiamenti, dovrei ripeterli in tutti i files in cui quel codice si trova, come successo poc'anzi.
+
+In particolare nel codice sviluppato fino ad ora ripete diverse volte il codice per ricavare la lista degli stati permessi sia all'interno del **controllers/task_controller.rb** che nel **controllers/pages_controller.rb**.
+
+In questo caso sarebbe opportuno farlo calcolare una volta sola e renderlo disponibile ai vari controllers. Visto che la prima pagina chiamata dell'APP è la Home... lasciamo il calcolo li dentro e lo rendiamo disponibile ad altri controllers attraverso una variabile GLOBALE che si dichiare inserendo "$" davanti al nome della variabile.
 
 
 # RubyOnRailsTutorial
