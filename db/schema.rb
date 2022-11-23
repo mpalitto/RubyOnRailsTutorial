@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_11_19_162848) do
+ActiveRecord::Schema[7.0].define(version: 2022_11_23_061633) do
   create_table "stato_richiesta_manutenziones", force: :cascade do |t|
     t.string "valoriPossibili"
     t.datetime "created_at", null: false
@@ -18,9 +18,9 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_19_162848) do
   end
 
   create_table "tasks", force: :cascade do |t|
-    t.string "title"
+    t.string "oggetto"
     t.text "richiesta"
-    t.date "completed"
+    t.date "urgenza"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "stato"

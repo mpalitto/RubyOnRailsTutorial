@@ -10,7 +10,7 @@ La richiesta dovrà essere eseguita per un appartamento e quindi dovremo aggiung
 
 il **contatto** che identifica la persona che inserisce la richiesta
 
-`bin/rails generate migration AddContttoToTasks contatto:string`
+`bin/rails generate migration AddContattoToTasks contatto:string`
 
 il campo **notes** viene rinominato **richiesta** che contiene il testo con la descrizione dettagliata della richiesta
 1. `bin/rails generate migration FixColumnName` che genera il file `db/migrate/xxxxxxxxxx_fix_column_name.rb`
@@ -32,7 +32,7 @@ Questo permetterà di rendere i vari stati editabili (in futuro), cioè aggiunge
 
 `bin/rails generate model statoRichiestaManutenzione valoriPossibili:string`
 
-per inserire il select dato un oggetto: [esempio](https://www.linkedin.com/pulse/create-dynamic-select-tag-your-model-based-form-ruby-rails-josh-lee)
+per inserire il **select**, dato un oggetto: [esempio](https://www.linkedin.com/pulse/create-dynamic-select-tag-your-model-based-form-ruby-rails-josh-lee)
 
 1. aggiungo stato al DB delle richieste `bin/rails generate migration AddStatoToTasks stato:string`
 2. aggiorno il DB `rake db:migrate`

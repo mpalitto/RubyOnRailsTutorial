@@ -33,7 +33,7 @@ end
 # private methods
 private
 def task_params
-  params.require(:task).permit(:title, :richiesta, :completed, :stato)
+  params.require(:task).permit(:oggetto, :richiesta, :urgenza, :stato)
 end
 
 end

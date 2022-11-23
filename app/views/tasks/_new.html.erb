@@ -1,11 +1,11 @@
 <div class="modal-header">
-  <h1>New Task</h1>
+  <h1>Nuova Richiesta</h1>
 </div>
 <%= simple_form_for task, class: 'clearfix', remote: true  do |f| %>
   <div class="modal-body">
-    <%= f.input :title %>
+    <%= f.input :oggetto %>
     <%= f.input :richiesta %>
-    <%= f.input :completed, as: :string, input_html: {class: 'datepicker'} %>  </div>
+    <%= f.input :urgenza, as: :string, input_html: {class: 'datepicker'} %>  </div>
     <%= f.hidden_field :stato, :value => "new" %>
   <div class="modal-footer">
     <%= f.submit 'Save', class: 'btn btn-primary' %>
