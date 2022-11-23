@@ -1,2 +1,2 @@
-$('#task-list').html('<%= j(render partial: 'tasks/task_list', locals: {tasks: @tasks, stati: $stati}) %>');
+<%= render('application/render_task_list') %>
 $('#modal').modal('hide');

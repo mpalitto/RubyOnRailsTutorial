@@ -94,8 +94,11 @@ Nel caso dovessi fare nel futuro dei cambiamenti, dovrei ripeterli in tutti i fi
 
 In particolare nel codice sviluppato fino ad ora ripete diverse volte il codice per ricavare la lista degli stati permessi sia all'interno del **controllers/task_controller.rb** che nel **controllers/pages_controller.rb**.
 
-In questo caso sarebbe opportuno farlo calcolare una volta sola e renderlo disponibile ai vari controllers. Visto che la prima pagina chiamata dell'APP è la Home... lasciamo il calcolo li dentro e lo rendiamo disponibile ad altri controllers attraverso una variabile GLOBALE che si dichiare inserendo "$" davanti al nome della variabile.
+In questo caso sarebbe opportuno farlo calcolare una volta sola e renderlo disponibile ai vari controllers. Visto che la prima pagina chiamata dell'APP è la Home... lasciamo il calcolo li dentro (**controllers/pages_controller.rb**) e lo rendiamo disponibile ad altri controllers attraverso una variabile GLOBALE che si dichiare inserendo "$" davanti al nome della variabile. Questa operazione ha permesso di rimuovere il calcolo delle opzioni disponibili in varie parti del **tasks_controller.rb**.
 
+Inoltre, abbiamo un altra ridondanza presente nel codice: quella che richiede di aggiornare la lista delle richieste. Questo avviene ogni qualvolta aggiungiamo o rimuoviamo le richieste... in particolare questo coincide con le varie azioni trovate all'interno del **tasks_controller.rb** e cioè: **create**, **destroy**, e **clear**. Una volta che viene aggiornata la lista dal controller, viene richiamato il corrispettivo file **views/tasks/...js.erb**.
+
+Per evitare di scrivere lo stesso script più volte (e quindi di doverlo modificare eventualmente più volte), inserisco lo script nel file **views/application/_render_task_list.js.erb** e lo richiamo all'interno degli altri scripts con `<%= render('application/render_task_list') %>`
 
 # RubyOnRailsTutorial
 by Prof. Palitto
