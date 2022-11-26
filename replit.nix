@@ -1,5 +1,6 @@
 { pkgs }: {
 	deps = [
+        pkgs.vimHugeX
         pkgs.nano
         pkgs.ruby_3_0
         pkgs.rubyPackages_3_0.solargraph

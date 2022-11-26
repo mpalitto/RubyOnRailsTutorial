@@ -1,8 +1,17 @@
 class ApplicationController < ActionController::Base
-# Rescue form  invalid authentificitytoken
-  rescue_from ActionController::InvalidAuthenticityToken, :with => :bad_token
-  def bad_token
-    flash[:warning] = "Session expired"
-    redirect_to root_path
+  # Prevent CSRF attacks by raising an exception.
+  # For APIs, you may want to use :null_session instead.
+  protect_from_forgery with: :exception
+  before_action :authorize
+  
+  def current_user
+    @current_user ||= User.find(session[:user_id]) if session[:user_id]
   end
+  helper_method :current_user
+
+  def authorize
+    puts "AUTHORIZING..."
+    redirect_to '/login' unless current_user
   end
+
+end

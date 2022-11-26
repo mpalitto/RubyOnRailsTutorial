@@ -1,5 +1,6 @@
-
 <div class="container" id="task-list">
+  <%= link_to '+ Nuova Richiesta',  new_task_path,  class:  'btn btn-primary', remote: true  %>
+  <%= link_to 'Come non detto',  clear_tasks_path,  class:  'btn btn-primary', remote: true  %>
   <%= render partial: 'tasks/task_list', locals: {stati: $stati, tasks: @tasks} %>
 </div>
 <div class="modal fade" id="modal"></div>

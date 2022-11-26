@@ -100,6 +100,168 @@ Inoltre, abbiamo un altra ridondanza presente nel codice: quella che richiede di
 
 Per evitare di scrivere lo stesso script più volte (e quindi di doverlo modificare eventualmente più volte), inserisco lo script nel file **views/application/_render_task_list.js.erb** e lo richiamo all'interno degli altri scripts con `<%= render('application/render_task_list') %>`
 
+## User Login
+ref: https://medium.com/@rmeji1/creating-a-login-with-simple-auth-using-ruby-on-rails-7dd95a03cb7a
+
+iniziamo con il DB... dalla shell: `rails g model User username:string password_digest:string`
+
+dalla shell: `rails db:migrate`
+
+Uso un **gem** chiamata **bcrypt**
+
+inserisco `gem 'bcrypt'` nel **Gemfile** e quindi da shell `bundle install`
+
+Per usare **bcrypt** in **models/User.rb** aggiungo `has_secure_password`
+```
+class User < ApplicationRecord
+  has_secure_password
+end
+```
+### Routes
+modifico il **config/route.rb** e aggiungo
+```
+  root 'sessions#home'
+  # User routes
+  resources :users, only: [:new, :create, :edit, :update, :show, :destroy]
+  # Session routes
+  get '/login', to: 'sessions#login'
+  post '/login', to: 'sessions#create'
+  get '/logout', to: 'sessions#destroy'
+  post '/logout', to: 'sessions#destroy'
+```
+### Controllers
+`rails generate controller sessions`
+
+il file **controllers/session_controller.rb**
+```
+class SessionsController < ApplicationController
+
+  def login
+    puts "LOGIN"
+  end
+  
+  def create #invocata quando user preme il bottone di LOGIN
+    puts "Session CREATE"
+    @user = User.find_by(username: params[:username])  #cerca utente ne DB
+    if !!@user && @user.authenticate(params[:password]) # nel caso tutto a posto
+      session[:user_id]   = @user.id
+      #carica la pagina "pages/home"
+      redirect_to :controller => "pages", :action => "home"
+    else #qualche errore ritorna alla schermata di login
+      message = "ERRORE!"
+      redirect_to login_path, notice: message
+    end
+  end
+
+  def destroy #logout
+    session[:user_id] = nil
+    redirect_to '/login'
+ end
+
+end
+```
+
+è ora di creare la schermata di LOGIN
+```
+<div>
+  <h2>Log In</h2>
+  <%= form_tag '/login' do %>
+    Username: <%= text_field_tag :username %>
+    Password: <%= text_field_tag :password %>
+    <%= submit_tag "Log In" %>
+    <% end %><br>
+      <%= link_to ' Nuovo Utente',  new_user_path %>
+</div>
+```
+come definito in **routes.rb** il `'/login'` corrisponde alla pagina **session/login**
+
+quando vine premuto il pulsante **Log In** viene richiamata la `def create` nel **session_controller.rb**
+
+Ho anche aggiunto il link per potersi registrare nel caso non si avesse un accesso.
+
+Per la registrazione usiamo il **Form** definito nel **view/users/new.html.erb**
+```
+<h1>Registrazione Nuovo Utente</h1>
+
+<%= form_for @user do |f| %>
+  <%= f.label :username %>
+  <%= f.text_field :username %><br>
+  <%= f.label :password %>
+  <%= f.password_field :password %>
+  <%= f.submit "Crea Account" %>
+<% end %> 
+```
+Vediamo il **controllers/users_controller.rb**
+```
+class UsersController < ApplicationController
+  def new
+    @user = User.new
+  end
+
+  def create
+    puts "Entering NEW USER #{user_params}"
+    @user = User.create(user_params)
+    if @user.save
+      puts "User: #{@user.id} WAS SAVED"
+      redirect_to login_path
+    else
+      puts "FAIL to save NEW USER"
+      render "new"
+    end
+  end
+
+  def show
+    @user = User.find(params[:user_id])
+  end
+
+  private
+  def user_params
+    params.require(:user).permit(:username, :password)
+  end
+end
+```
+vengono ricevuti lo **username** e la **password** usati per inserire il nuovo utente nel DB.
+
+NOTA: vorrei che lo username coincidesse con email e che venisse fatta una verifica che fosse un fomato di email.
+
+Inoltre prima dell'inserimento dovrei fare la ricerca se **username** esiste ed eventualmente indicare l'errore di utente già inserito... eventuale recupero???
+
+### Integrazione con l'APP
+Quando l'utente arriva al sito gli si deve chiedere di autenticarsi: nel file **routes.rb** sostituisco la root page `  root 'sessions#login'`.
+
+Affinchè non si possa accedere alle pagine dell'APP senza autorizzazione inseriamo in **application_controller.rb`
+```
+  before_action :authorize
+  
+  def current_user
+    @current_user ||= User.find(session[:user_id]) if session[:user_id]
+  end
+  helper_method :current_user
+
+  def authorize
+    redirect_to '/login' unless current_user
+  end
+
+```
+Questo eseguirà il controllo per l'accesso ad ogni pagina del sito...
+
+Ma dobbiamo dare l'accesso alla pagina di login e di registrazione anche senza autorizzazione...
+
+e dobbiamo aggiungere ai relativi controllers delle pagine pubbliche `skip_before_action :authorize` subito all'interno della classe.
+
+Nel nostro caso bisgna aggiungerlo al **pages_controller.rb** e a **tasks_controller.rb**
+
+```
+class UsersController < ApplicationController
+  skip_before_action :authorize, only: [:new, :create]
+...
+```
+```
+class SessionsController < ApplicationController
+  skip_before_action :authorize, only: [:create, :new]
+  ...
+```
+
 # RubyOnRailsTutorial
 by Prof. Palitto
 
