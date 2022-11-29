@@ -3,6 +3,8 @@ class UsersController < ApplicationController
   
   def new
     @user = User.new
+    apts = Appartamenti.all
+    @appartamenti = apts.map { |s| [s.apt, s.apt] }
   end
 
   def create
@@ -23,6 +25,6 @@ class UsersController < ApplicationController
 
   private
   def user_params
-    params.require(:user).permit(:email, :password)
+    params.require(:user).permit(:email, :apt, :password)
   end
 end

@@ -10,6 +10,8 @@ class SessionsController < ApplicationController
     @user = User.find_by(email: params[:email])  #cerca utente ne DB
     if !!@user && @user.authenticate(params[:password]) # nel caso tutto a posto
       session[:user_id]   = @user.id
+      session[:email]   = @user.email
+      session[:apt]   = @user.apt
       #carica la pagina "pages/home"
       redirect_to :controller => "pages", :action => "home"
     else #qualche errore ritorna alla schermata di login

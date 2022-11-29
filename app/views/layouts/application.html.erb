@@ -19,12 +19,16 @@
       <h1>
         Richiesta Manutenzioni
       </h1>
+      <% if current_user %>
+        <% puts "UTENTE: #{current_user}" %>
+      <p>
+        inserisci e gestisci le richieste per <b><%= current_user.apt %></b>
+      </p>  
+        <h4 class="benvenuto">Benvenuto <%= current_user.email %>      <a class="btn btn-primary" href="/logout">Log Out</a> </h4>
+      <% else %>
       <p>
         inserisci e gestisci le richieste
       </p>  
-      <% if current_user %>
-        <% puts "UTENTE: #{current_user}" %>
-        <h4 class="benvenuto">Benvenuto <%= current_user.email %>      <a class="btn btn-primary" href="/logout">Log Out</a> </h4>
       <% end %>
     </div>
   </div>

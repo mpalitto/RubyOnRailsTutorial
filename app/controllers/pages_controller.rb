@@ -2,7 +2,7 @@ class PagesController < ApplicationController
   before_action :authorize
 
   def home
-    @tasks = Task.all
+    @tasks = Task.where('apt = "' + session[:apt] + '"')
     puts "Generazione vettore STATI..."
     statiPossibili = StatoRichiestaManutenzione.all
     #statiPossibili.map {|s| puts "statiPossibili: #{s.valoriPossibili}"}

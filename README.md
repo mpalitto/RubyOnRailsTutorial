@@ -261,7 +261,89 @@ class SessionsController < ApplicationController
   skip_before_action :authorize, only: [:create, :new]
   ...
 ```
+## Richieste per utente e appartamento
+Nel DB per ora la tabella delle richieste non contiene l'autore del richiedente, ne l'appartamanto a cui è associato
 
+In realtà ci dovrebbe essere una tabella separata per descrivere un appartamento.
+Nella nuova tabella dovrei inserire: appartamento, con la lista degli inquilini, inclusi i dati di registrazione...
+Per fare questo utilizzo la tabella **USERS** a vi aggiungo la colonna dell'appartamento da selezionare all'nterno di una lista precompilata, nello stesso stile di quanto fatto per lo **stato** della richiesta.
+
+Aggiungo appartamento dell'inquilino nella tabella **users**
+`bin/rails generate migration AddAptToUsers apt:string`
+
+Creo la nuova tabella **Appartamenti** `rails generate model appartamenti apt:string`
+
+seguito da un `rake db:migrate` per aggiornare il DB
+
+Mi assicuro di inserire maualmente degli appartamenti nella tabella, 
+
+1. dalla SHELL `rails c`
+2. `Appartamenti.create(apt: "apt-01")`
+3. `Appartamenti.create(apt: "apt-02")`
+3. `Appartamenti.create(apt: "apt-03")`
+3. ...
+
+mi assicuro che siano stati inseriti `Appartamenti.all`
+
+Inserisco l'input per la selezione dell'Appartamento nel Form per la registrazione di nuovo utente:
+
+inserisco `<%= f.select(:apt, @appartamenti, {}, {class: "form-control"}) %>` nel **view/users/new.html.erb**
+
+inoltre devo aggiungere la lista degli appartamenti forniti dal **users_controller.rb**, lo faccio aggiungendo
+```
+  def new
+    @user = User.new
+    apts = Appartamenti.all
+    @appartamenti = apts.map { |s| [s.apt, s.apt] }
+  end
+```
+e aggiungo APT tra i parametri permessi per la registrazione
+```
+  def user_params
+    params.require(:user).permit(:email, :apt, :password)
+  end
+```
+
+Una volta fatto il LOGIN dobbiamo tenere in una variabile di sessione anche l'appartamento associato all'utente e visto che ci siamo anche l'email
+
+**controllers/session_controller.rb**
+```
+    if !!@user && @user.authenticate(params[:password]) # nel caso tutto a posto
+      session[:user_id]   = @user.id
+      session[:email]   = @user.email
+      session[:apt]   = @user.apt
+ ```
+
+ Quando una nuova richiesta viene inserita, dobbiamo aggiungere l'autore (email) oltre che l'appartamento
+
+ Aggiungiamo le due colonne alla tabella **Tasks** dalla SHELL
+ ```
+ rails generate migration AddEmailToTasks email:string
+ rails generate migration AddAptToTasks apt:string
+ ```
+Nel **tasks_controller.rb** ai parametri del Form aggiungo quelli della sessione (email e apt)
+ ```
+ def create
+  myP = {}
+  myP = task_params
+  myP[:email] = session[:email]
+  myP[:apt] = session[:apt]
+  puts "Matteo --> Create New Task with params: #{myP}"
+  @task = Task.create(myP)
+  @tasks = Task.all
+end
+ ```
+
+Quando faccio la lista delle Richieste, visualizzo solo quelle relative all'appartamento in questione:
+sostituisco `@tasks = Task.all` con `@tasks = Task.where('apt = "' + session[:apt] + '"')`
+
+Inoltre vado a dare la possibilità di rimuovere la Richiesta solo all'autore e non ai co-inquilini che però possono vedere la lista di richieste completa per appartamento nel file **view/tasks/_task_list.html.erb**
+```
+            <td class="text-success">
+              <% if(task.email == session[:email]) %>
+                <%= link_to task_path(task), method: :delete, remote: true, data: {confirm: "Are you sure you want to delete task #{task.oggetto}?"} do %>  <i class="icon-remove"></i><% end %>
+              <% end %>
+```
 # RubyOnRailsTutorial
 by Prof. Palitto
 

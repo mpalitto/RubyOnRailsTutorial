@@ -18,9 +18,13 @@ def destroy
 end
 
 def create
-  puts "Matteo --> Create New Task with params: #{task_params}"
-  @task = Task.create(task_params)
-  @tasks = Task.all
+  myP = {}
+  myP = task_params
+  myP[:email] = session[:email]
+  myP[:apt] = session[:apt]
+  puts "Matteo --> Create New Task with params: #{myP}"
+  @task = Task.create(myP)
+  @tasks = Task.where('apt = "' + session[:apt] + '"')
 end
 
 def update

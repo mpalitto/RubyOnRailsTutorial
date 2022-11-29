@@ -3,6 +3,8 @@
 <%= form_for @user do |f| %>
   <%= f.label :Email %>
   <%= f.email_field :email %><br>
+  <%= f.label :apt %>
+  <%= f.select(:apt, @appartamenti, {}, {class: "form-control"}) %>
   <%= f.label :password %>
   <%= f.password_field :password %>
   <%= f.submit "Crea Account" %>
