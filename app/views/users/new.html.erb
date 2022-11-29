@@ -1,8 +1,8 @@
 <h1>Registrazione Nuovo Utente</h1>
 
 <%= form_for @user do |f| %>
-  <%= f.label :username %>
-  <%= f.text_field :username %><br>
+  <%= f.label :Email %>
+  <%= f.email_field :email %><br>
   <%= f.label :password %>
   <%= f.password_field :password %>
   <%= f.submit "Crea Account" %>

@@ -7,7 +7,7 @@ class SessionsController < ApplicationController
   
   def create #invocata quando user preme il bottone di LOGIN
     puts "Session CREATE"
-    @user = User.find_by(username: params[:username])  #cerca utente ne DB
+    @user = User.find_by(email: params[:email])  #cerca utente ne DB
     if !!@user && @user.authenticate(params[:password]) # nel caso tutto a posto
       session[:user_id]   = @user.id
       #carica la pagina "pages/home"

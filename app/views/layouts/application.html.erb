@@ -24,7 +24,7 @@
       </p>  
       <% if current_user %>
         <% puts "UTENTE: #{current_user}" %>
-        <h4 class="benvenuto">Benvenuto <%= current_user.username %>      <a class="btn btn-primary" href="/logout">Log Out</a> </h4>
+        <h4 class="benvenuto">Benvenuto <%= current_user.email %>      <a class="btn btn-primary" href="/logout">Log Out</a> </h4>
       <% end %>
     </div>
   </div>
