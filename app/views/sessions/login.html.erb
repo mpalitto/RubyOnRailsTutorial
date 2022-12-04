@@ -1,9 +1,9 @@
 <div class="container">
   <h2>Log In</h2>
-  <%= form_tag '/login' do %>
+  <%= form_tag('/login', remote: true) do %>
     Email: <%= email_field_tag :email %>
     Password: <%= password_field_tag :password %>
     <%= submit_tag "Log In" %>
-    <% end %><br>
-      <%= link_to ' Nuovo Utente',  new_user_path %>
+   <% end %><br>
+  <%= link_to ' Nuovo Utente',  new_user_path %>
 </div>

@@ -44,7 +44,7 @@ per inserire il **select**, dato un oggetto: [esempio](https://www.linkedin.com/
               <%= simple_form_for task, class: 'clearfix', remote: true  do |f| %>
                 <%= f.select(:stato, stati, {}, {:onchange => 'this.form.submit()', class: "form-control"}) %>
               <% end %>
-         </td>
+       </td>
  ```
 Visto che voglio dare la possibilità all'utente di cambiare lo stato dalla lista stessa...
 
@@ -280,8 +280,8 @@ Mi assicuro di inserire maualmente degli appartamenti nella tabella,
 1. dalla SHELL `rails c`
 2. `Appartamenti.create(apt: "apt-01")`
 3. `Appartamenti.create(apt: "apt-02")`
-3. `Appartamenti.create(apt: "apt-03")`
-3. ...
+4. `Appartamenti.create(apt: "apt-03")`
+5. ...
 
 mi assicuro che siano stati inseriti `Appartamenti.all`
 
@@ -344,6 +344,204 @@ Inoltre vado a dare la possibilità di rimuovere la Richiesta solo all'autore e 
                 <%= link_to task_path(task), method: :delete, remote: true, data: {confirm: "Are you sure you want to delete task #{task.oggetto}?"} do %>  <i class="icon-remove"></i><% end %>
               <% end %>
 ```
+## Tipi di utenti
+Gli utenti di questa APP sicuramente sono i vari inquilini che possono inserire le Richieste di Manutenzione, ma ci sono altre figure che hanno la gestione delle richieste.
+
+Idealmente ci dovrebbe essere un ruolo di amministratore che fosse in grado di inserire utenti con il ruolo di gestore, i gestori possono gestire le varie Richieste.
+
+### Amministratore
+Il primo utente che si registra (utente con ID = 0) è automaticamente l'amministratore.
+
+L'Amministratore può accedere alla pagina **utenti.html.erb** da cui può gestire i vari accounts
+
+Le operazioni che può effettuare sono: cambiare la password e cambiare il ruolo, oltre l'archiviazione di ogni utente.
+
+Inoltre l'amministratore può accedere all'archivio **archivio-utenti.html.erb** degli utenti e ristabilire un utente archiviato.
+
+Quando un nuovo utente si registra, deve essere APPROVATO dall'Amministratore prima di poter accedere all'APP.
+
+L'amministratore e il gestore possono inserire commenti sull'utente da questa pagina.
+
+### Gestore 
+Può accedere alla pagina di Gestione delle Richieste **manage-tasks.html.erb**
+
+può accedere alla pagina **utenti.html.erb** ma solo in lettura, a parte la possibilità di inserire dei commenti agli utenti.
+### Inquilino
+Può accedere alle richieste del proprio appartamento, ma può editare/rimuovere solamente quelle inserite da lui/lei stesso/a MA ancora nello stato di NEW.
+
+Per tutte le altre Richieste del suo appartamento può inserire un commento
+
+Può inserire di nuove Richieste
+
+Per le proprie Richieste in CONSEGNA può inserire il punteggio di soddisfazione.
+
+### Tutti 
+possono accedere al prorio **user-account.html.erb** e aggiornare la password e le proprie infos
+
+### Storicità
+Le richieste possono essere modificate dal gestore e la storicità delle modifiche dovrebbero essere mantenuto in una timeline.
+
+Una volta che la modifica viene salvata, la tabella della Richiesta viene aggiornata, e la tabella della storicità viene aggiunta una riga con il valore precedente....
+
+Anche le modifiche fatte sul profilo utente vengono mantenute
+
+Esempio: Storicità profilo utente
+N.2 02/12/22 10:53 admin@gmail.com
+PASSWORD OLD --> Standard
+
+N.1 01/12/22 21:25 utente1@gmail.com
+PASSWORD OLD --> NEW
+
+N.0 15/11/22 11:34 admin@gmail.com
+STATO  NEW --> INQUILINO
+
+### Come fare
+Inserisco una variabile `session[ruolo]` che se ID = 0 vale ADMIN `if(@user_id == 0) session[:ruolo] = "ADMIN"`
+
+Inserisco una Colonna **stato** alla tabella **Users** per indicare se utente è o meno gestore. Il valore è di default NEW.
+
+`bin/rails generate migration AddStatoToUsers stato:string`
+
+NEW significa che l'utente ancora non è stato approvato da amministratore
+
+Se **stato** è "GESTORE" `session[ruolo]` vale GESTORE
+
+Se **stato** INQUILINO `session[ruolo]` vale INQUILINO
+
+Se **stato** è ARCHIVIATO indica che utente non è più attivo ed è stato disattivato.
+
+Inserisco una Colonna **commenti** alla tabella **Users** e alla tabella **Tasks**
+
+`bin/rails generate migration AddCommentiToTasks commenti:text`
+
+`bin/rails generate migration AddCommentiToUsers commenti:text`
+
+Inerisco una Colonna **history** alla tabella **Users** e alla tabella **Tasks**
+ 
+`bin/rails generate migration AddHistoryToTasks history:text`
+
+`bin/rails generate migration AddHistoryToUsers history:text`
+
+`rake db:migrate`
+
+inserisco nuovo route per la lista degli utenti `get '/utenti', to: 'users#list'` in **routes.rb**
+
+Nel caso in cui Utente sia ADMIN mostro un pulsante per accedere alla pagina **users/list.html.erb**
+
+Nell' **application_controller.rb** definisco un helper `def is_admin` che uso per dare accesso alla pagina **users/list.html.erb** solo ad ADMIN.
+
+Quindi, per ottenere ciò, inserisco nello **users_controller.rb** `before_action :is_admin, only: [:list]`
+
+nello **users_controller** inserisco
+```
+  def list
+    @users = User.all
+    puts @users.inspect
+  end
+```
+
+nel nuovo file **users/list.html.erb**
+```
+<div class="container">
+    <table class="table table-hover table-bordered">
+      <thead>
+        <tr>
+          <th>email</th>
+          <th>Stato</th>
+          <th>Azioni</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @users.each do |user| %>
+          <tr>
+            <td>
+              <%= user.email %>
+            </td>
+            <td>
+              <%= user.stato %>
+            </td>
+            <td>
+              None
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+</div>
+```
+Adesso devo poter inserire nello stato la possibilità di selezionare tra i vari stati possibili, similarmente come ho fatto per lo stato delle richieste.
+`<%= user.stato %>` diventa
+```
+<%= simple_form_for user, class: 'clearfix', remote: true  do |f| %>
+  <%= f.select(:stato, @stati, {}, {:onchange => 'this.form.submit()', class: "form-control"}) %>
+<% end %>
+```
+e nel **users_controller.rb** sostituisco e aggiungo:
+```
+  def list
+    @users = User.all
+    @stati = [['NEW','NEW'],['INQUILINO','INQUILINO'],['GESTORE','GESTORE'],['ADMIN','ADMIN'],['ARCHIVIATO','ARCHIVIATO']]
+    puts @users.inspect
+  end
+
+  def update
+    puts "Matteo --> Update User with params: #{params[:id]}"
+    user = User.find(params[:id])
+    user.stato = user_params[:stato]
+    user.save
+    redirect_to '/utenti'
+  end
+
+  private
+  def user_params
+    params.require(:user).permit(:email, :apt, :password, :stato)
+  end
+```
+Ora vorrei che in questa lista ci fosse la distinzione tra i nuovi accounts che devono essere approvati e gli altri
+
+Come prima cosa, devo inserire lo stato = "NEW" quando un nuovo account viene creato
+
+Nel **users_controller.rb** modifico l'azione `def create`
+```
+  def create
+    myParams = {}
+    myParams = user_params
+    myParams[:stato] = "NEW"
+    puts "Entering NEW USER #{myParams}"
+    @user = User.create(myParams)
+    if @user.save
+      puts "User: #{@user.id} WAS SAVED"
+      redirect_to login_path
+    else
+      puts "FAIL to save NEW USER"
+      render "new"
+    end
+  end
+```
+Quindi nella lista distinguo i nuovi dagli utenti già attivi
+```
+  def list
+    @nuovi = User.where(stato: "NEW")
+    @users = User.where.not(stato: "NEW")
+    @stati = [['NEW','NEW'],['INQUILINO','INQUILINO'],['GESTORE','GESTORE'],['ADMIN','ADMIN'],['ARCHIVIATO','ARCHIVIATO']]
+    puts @users.inspect
+  end
+```
+Adesso vorrei che una volta entrato nella lista utenti il pulsante che mi ha permesso di accedervi scompaia e al suo posto compaia un pulsante che mi riportasse alla lista delle richieste. In **application.html.erb** sostituisco con
+```
+<% if session[:ruolo] == "ADMIN" %> <% if(request.path == '/home') %><a class="btn btn-primary" href="/utenti">Utenti</a> <% end %><% if(request.path == '/utenti') %><a class="btn btn-primary" href="/home">Home</a> <% end %> <% end %>
+```
+
+#### login
+se utente è registrato, ma non ancora approvato, viene mostrato un messaggio che utente è in attesa di approvazione
+se utente è archiviato, viene mostrato un messaggio dicendo che utente non è più attivo e viene chiesto se vuole richiedere la ri-attivazione
+
+Posso utilizzare la finestra modal per mostrare una specie di alert, devo quindi inserire `remote: true` nel FORM per il LOGIN.
+
+Questo mi permette di richiamare il file **sessions/wait4confirmation.js.erb** che poi richiama la finestra modal...
+
+Ma devo anche trasformare la pagina home... o meglio inserire la pagina **pages/home.js.erb** che va a richiedere la pagina **pages/home.html.erb**
+
 # RubyOnRailsTutorial
 by Prof. Palitto
 

@@ -1,0 +1,56 @@
+<div class="container">
+  <h2>Nuovi Utenti da Approvare</h2>
+    <table class="table table-hover table-bordered">
+      <thead>
+        <tr>
+          <th>email</th>
+          <th>Stato</th>
+          <th>Azioni</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @nuovi.each do |user| %>
+          <tr>
+            <td>
+              <%= user.email %>
+            </td>
+            <td>
+              <%= simple_form_for user, class: 'clearfix', remote: true  do |f| %>
+                <%= f.select(:stato, @stati, {}, {:onchange => 'this.form.submit()', class: "form-control"}) %>
+              <% end %>
+            </td>
+            <td>
+              None
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+    <h2>Utenti Attivi</h2>
+    <table class="table table-hover table-bordered">
+      <thead>
+        <tr>
+          <th>email</th>
+          <th>Stato</th>
+          <th>Azioni</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @users.each do |user| %>
+          <tr>
+            <td>
+              <%= user.email %>
+            </td>
+            <td>
+              <%= simple_form_for user, class: 'clearfix', remote: true  do |f| %>
+                <%= f.select(:stato, @stati, {}, {:onchange => 'this.form.submit()', class: "form-control"}) %>
+              <% end %>
+            </td>
+            <td>
+              None
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>    
+</div>

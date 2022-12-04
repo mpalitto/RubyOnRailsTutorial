@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_11_29_202933) do
+ActiveRecord::Schema[7.0].define(version: 2022_12_02_183801) do
   create_table "appartamentis", force: :cascade do |t|
     t.string "apt"
     t.datetime "created_at", null: false
@@ -32,6 +32,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_29_202933) do
     t.string "stato"
     t.string "email"
     t.string "apt"
+    t.text "commenti"
+    t.text "history"
   end
 
   create_table "users", force: :cascade do |t|
@@ -40,6 +42,9 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_29_202933) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "apt"
+    t.string "stato"
+    t.text "commenti"
+    t.text "history"
   end
 
 end

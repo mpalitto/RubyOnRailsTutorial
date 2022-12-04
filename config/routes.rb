@@ -13,6 +13,9 @@ Rails.application.routes.draw do
   post '/login', to: 'sessions#create'
   get '/logout', to: 'sessions#destroy'
   post '/logout', to: 'sessions#destroy'
+  get '/waiting4approval', to: 'sessions#waiting4approval'
+  get '/riattiva', to: 'sessions#riattiva'
+get '/utenti', to: 'users#list'
 
   resource :tasks, only: [] do
     get 'clear', on: :member

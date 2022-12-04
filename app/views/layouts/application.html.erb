@@ -1,39 +1,43 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>RailsRuby</title>
-    <!--script src="/javascripts/script2sourceInApplicationLayout.js"></script-->
+<head>
+  <title>RailsRuby</title>
+  <!--script src="/javascripts/script2sourceInApplicationLayout.js"></script-->
 
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <%= csrf_meta_tags %>
-    <%= csp_meta_tag %>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
 
-    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
-    <%= javascript_importmap_tags %>
-  </head>
+  <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+  <%= javascript_importmap_tags %>
+</head>
 
 <body>
-<div class="row-fluid">
-  <div class="span10 offset1">
-    <div class="hero-unit text-center">
-      <h1>
-        Richiesta Manutenzioni
-      </h1>
-      <% if current_user %>
-        <% puts "UTENTE: #{current_user}" %>
-      <p>
-        inserisci e gestisci le richieste per <b><%= current_user.apt %></b>
-      </p>  
-        <h4 class="benvenuto">Benvenuto <%= current_user.email %>      <a class="btn btn-primary" href="/logout">Log Out</a> </h4>
-      <% else %>
-      <p>
-        inserisci e gestisci le richieste
-      </p>  
-      <% end %>
+  <div class="row-fluid">
+    <div class="span10 offset1">
+      <div class="hero-unit text-center">
+        <h1>
+          Richiesta Manutenzioni
+        </h1>
+        <% if current_user %>
+          <% puts "UTENTE: #{current_user}" %>
+        <p>
+          inserisci e gestisci le richieste per <b><%= current_user.apt %></b>
+        </p>  
+            <% puts "URL: #{request.path}" %>
+          <h4 class="benvenuto">Benvenuto <%= current_user.email %>      <a class="btn btn-primary" href="/logout">Log Out</a> 
+            <% if session[:ruolo] == "ADMIN" %> <% if(request.path == '/home') %><a class="btn btn-primary" href="/utenti">Utenti</a> <% end %><% if(request.path == '/utenti') %><a class="btn btn-primary" href="/home">Home</a> <% end %> <% end %>
+          </h4>
+        <% else %>
+        <p>
+          inserisci e gestisci le richieste
+        </p>  
+        <% end %>
+      </div>
     </div>
   </div>
-</div>
 
-    <%= yield %>
-</body>
+  <%= yield %>
+  <div class="modal fade" id="modal"></div>
+  </body>
 </html>

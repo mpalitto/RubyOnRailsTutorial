@@ -9,6 +9,11 @@ class ApplicationController < ActionController::Base
   end
   helper_method :current_user
 
+  def is_admin
+    @current_user.stato == "ADMIN"
+  end
+  helper_method :is_admin
+
   def authorize
     puts "AUTHORIZING..."
     redirect_to '/login' unless current_user
