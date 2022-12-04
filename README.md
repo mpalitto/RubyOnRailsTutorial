@@ -378,22 +378,6 @@ Per le proprie Richieste in CONSEGNA può inserire il punteggio di soddisfazione
 ### Tutti 
 possono accedere al prorio **user-account.html.erb** e aggiornare la password e le proprie infos
 
-### Storicità
-Le richieste possono essere modificate dal gestore e la storicità delle modifiche dovrebbero essere mantenuto in una timeline.
-
-Una volta che la modifica viene salvata, la tabella della Richiesta viene aggiornata, e la tabella della storicità viene aggiunta una riga con il valore precedente....
-
-Anche le modifiche fatte sul profilo utente vengono mantenute
-
-Esempio: Storicità profilo utente
-N.2 02/12/22 10:53 admin@gmail.com
-PASSWORD OLD --> Standard
-
-N.1 01/12/22 21:25 utente1@gmail.com
-PASSWORD OLD --> NEW
-
-N.0 15/11/22 11:34 admin@gmail.com
-STATO  NEW --> INQUILINO
 
 ### Come fare
 Inserisco una variabile `session[ruolo]` che se ID = 0 vale ADMIN `if(@user_id == 0) session[:ruolo] = "ADMIN"`
@@ -415,12 +399,6 @@ Inserisco una Colonna **commenti** alla tabella **Users** e alla tabella **Tasks
 `bin/rails generate migration AddCommentiToTasks commenti:text`
 
 `bin/rails generate migration AddCommentiToUsers commenti:text`
-
-Inerisco una Colonna **history** alla tabella **Users** e alla tabella **Tasks**
- 
-`bin/rails generate migration AddHistoryToTasks history:text`
-
-`bin/rails generate migration AddHistoryToUsers history:text`
 
 `rake db:migrate`
 
@@ -541,6 +519,44 @@ Posso utilizzare la finestra modal per mostrare una specie di alert, devo quindi
 Questo mi permette di richiamare il file **sessions/wait4confirmation.js.erb** che poi richiama la finestra modal...
 
 Ma devo anche trasformare la pagina home... o meglio inserire la pagina **pages/home.js.erb** che va a richiedere la pagina **pages/home.html.erb**
+
+### Storicità
+Le richieste possono essere modificate dal gestore e la storicità delle modifiche dovrebbero essere mantenuto in una timeline.
+
+Una volta che la modifica viene salvata, la tabella della Richiesta viene aggiornata, e la tabella della storicità viene aggiunta una riga con il valore precedente....
+
+Anche le modifiche fatte sul profilo utente vengono mantenute
+
+Esempio: Storicità profilo utente
+N.2 02/12/22 10:53 admin@gmail.com
+PASSWORD OLD --> Standard
+
+N.1 01/12/22 21:25 utente1@gmail.com
+PASSWORD OLD --> NEW
+
+N.0 15/11/22 11:34 admin@gmail.com
+STATO  NEW --> INQUILINO
+
+--------------------------------------------------------
+Inerisco una Colonna **history** alla tabella **Users** e alla tabella **Tasks**
+ 
+`bin/rails generate migration AddHistoryToTasks history:text`
+
+`bin/rails generate migration AddHistoryToUsers history:text`
+
+`rake db:migrate`
+
+nel **users_controller.rb** inserisco una funzione
+```
+  def AddHistory(user, text)
+    puts "AUTHOR: #{current_user[:email]}" 
+    if(! user.history) then user.history = "" end
+    user.history += DateTime.now.strftime("%d/%m/%Y  %I:%M%p") + " by " + current_user[:email] + '\n' + text + '\n\n'
+    user.save
+  end
+```
+che uso quando qualcosa viene modificato nel record dell'utente
+
 
 # RubyOnRailsTutorial
 by Prof. Palitto

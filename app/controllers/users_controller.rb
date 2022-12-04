@@ -1,5 +1,6 @@
 class UsersController < ApplicationController
-  protect_from_forgery with: :null_session
+  #protect_from_forgery with: 
+  skip_before_action :verify_authenticity_token
   skip_before_action :authorize, only: [:new, :create]
   before_action :is_admin, only: [:list]
   
@@ -17,6 +18,7 @@ class UsersController < ApplicationController
     @user = User.create(myParams)
     if @user.save
       puts "User: #{@user.id} WAS SAVED"
+      AddHistory(user, 'STATO  --> NEW (registrazione nuovo utente)')
       redirect_to login_path
     else
       puts "FAIL to save NEW USER"
@@ -38,13 +40,28 @@ class UsersController < ApplicationController
   def update
     puts "Matteo --> Update User with params: #{params[:id]}"
     user = User.find(params[:id])
+    AddHistory(user, 'STATO '+ user.stato + ' --> ' + user_params[:stato])
     user.stato = user_params[:stato]
     user.save
     redirect_to '/utenti'
+  end
+
+  def showHistory
+    puts "SHOW-HISTORY(params): #{params.inspect} #{params[:format]}"
+    user = User.find(params[:format])
+    @history = user.history
   end
 
   private
   def user_params
     params.require(:user).permit(:email, :apt, :password, :stato)
   end
+
+  def AddHistory(user, text)
+    puts "AUTHOR: #{current_user[:email]}" 
+    if(! user.history) then user.history = "" end
+    user.history += DateTime.now.strftime("%d/%m/%Y  %I:%M%p") + " by " + current_user[:email] + "\n" + text + "\n\n"
+    user.save
+  end
+  
 end

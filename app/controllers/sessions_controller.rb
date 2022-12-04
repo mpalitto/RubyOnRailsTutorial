@@ -10,6 +10,7 @@ class SessionsController < ApplicationController
     @user = User.find_by(email: params[:email])  #cerca utente ne DB
     if !!@user && @user.authenticate(params[:password]) # nel caso tutto a posto
       session[:email] = @user.email
+      puts "LOGGIN #{session[:email]}"
       session[:ruolo] = @user.stato
       if(@user.stato == "ARCHIVIATO" || @user.stato == nil || @user.stato == "NEW" )
         message = "ERRORE: Utente non APPROVATO o Archiviato"

@@ -20,7 +20,7 @@
               <% end %>
             </td>
             <td>
-              None
+              <%= link_to user_path(user), method: :showHystory, remote: true do %>  <i class="icon-hystory"></i><% end %>
             </td>
           </tr>
         <% end %>
@@ -47,7 +47,7 @@
               <% end %>
             </td>
             <td>
-              None
+              <%= link_to history_path(user), remote: true do %>  <i class="icon-time"></i><% end %>
             </td>
           </tr>
         <% end %>
