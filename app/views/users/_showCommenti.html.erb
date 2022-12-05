@@ -1,0 +1,7 @@
+<form action="/saveCommenti" method="POST">
+  <textarea name="commenti" data-remote="true" rows="40" cols="50">
+    <%= @user.commenti %>
+  </textarea>
+  <input type="hidden" name="userID" value="<%= @user.id %>">
+  <button type="submit" >SAVE</button>
+</form>

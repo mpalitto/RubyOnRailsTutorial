@@ -9,7 +9,7 @@
         </tr>
       </thead>
       <tbody>
-        <% @nuovi.each do |user| %>
+        <% Array(@nuovi).each do |user| %>
           <tr>
             <td>
               <%= user.email %>
@@ -20,7 +20,8 @@
               <% end %>
             </td>
             <td>
-              <%= link_to user_path(user), method: :showHystory, remote: true do %>  <i class="icon-hystory"></i><% end %>
+              <%= link_to history_path(user), remote: true do %>  <i class="icon-time"></i><% end %>
+              <%= link_to commenti_path(user), remote: true do %>  <i class="icon-comment"></i><% end %>
             </td>
           </tr>
         <% end %>
@@ -48,6 +49,7 @@
             </td>
             <td>
               <%= link_to history_path(user), remote: true do %>  <i class="icon-time"></i><% end %>
+              <%= link_to commenti_path(user), remote: true do %>  <i class="icon-comment"></i><% end %>
             </td>
           </tr>
         <% end %>

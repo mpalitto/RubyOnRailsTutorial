@@ -17,6 +17,8 @@ Rails.application.routes.draw do
   get '/riattiva', to: 'sessions#riattiva'
   get '/utenti', to: 'users#list'
   get '/history', to: 'users#showHistory'
+  get '/commenti', to: 'users#showCommenti'
+  post '/saveCommenti', to: 'users#saveCommenti'
 
   resource :tasks, only: [] do
     get 'clear', on: :member

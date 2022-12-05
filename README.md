@@ -23,7 +23,7 @@ class FixColumnName < ActiveRecord::Migration[7.0]
   end
 end
 ```
-### aggiunta di STATO nella nella LISTA delle richieste
+### aggiunta di STATO nella LISTA delle richieste
 lo **stato** della richiesta che può assumere solo alcuni valori
 
 i valori che **stato** può assumere saranno memorizzati in una tabella "statoRichiestaManutenzione" che ha una sola colonna "valoriPossibili" in cui memorizzare i vari valori possibili.
@@ -394,14 +394,6 @@ Se **stato** INQUILINO `session[ruolo]` vale INQUILINO
 
 Se **stato** è ARCHIVIATO indica che utente non è più attivo ed è stato disattivato.
 
-Inserisco una Colonna **commenti** alla tabella **Users** e alla tabella **Tasks**
-
-`bin/rails generate migration AddCommentiToTasks commenti:text`
-
-`bin/rails generate migration AddCommentiToUsers commenti:text`
-
-`rake db:migrate`
-
 inserisco nuovo route per la lista degli utenti `get '/utenti', to: 'users#list'` in **routes.rb**
 
 Nel caso in cui Utente sia ADMIN mostro un pulsante per accedere alla pagina **users/list.html.erb**
@@ -520,12 +512,8 @@ Questo mi permette di richiamare il file **sessions/wait4confirmation.js.erb** c
 
 Ma devo anche trasformare la pagina home... o meglio inserire la pagina **pages/home.js.erb** che va a richiedere la pagina **pages/home.html.erb**
 
-### Storicità
-Le richieste possono essere modificate dal gestore e la storicità delle modifiche dovrebbero essere mantenuto in una timeline.
-
-Una volta che la modifica viene salvata, la tabella della Richiesta viene aggiornata, e la tabella della storicità viene aggiunta una riga con il valore precedente....
-
-Anche le modifiche fatte sul profilo utente vengono mantenute
+### Storicità degli utenti
+Le modifiche fatte sul profilo utente vengono mantenute nel campo HISTORY
 
 Esempio: Storicità profilo utente
 N.2 02/12/22 10:53 admin@gmail.com
@@ -536,6 +524,63 @@ PASSWORD OLD --> NEW
 
 N.0 15/11/22 11:34 admin@gmail.com
 STATO  NEW --> INQUILINO
+
+Inserisco una Colonna **history** alla tabella **Users** e alla tabella **Tasks**
+
+`bin/rails generate migration AddHistoryToTasks history:text`
+
+`bin/rails generate migration AddHistoryToUsers history:text`
+
+`rake db:migrate`
+
+Anche in questo caso vado ad usare la finestra MODAL per mostrare le storicità quando una icona a orologio viene premuta nella colonna AZIONI della tabella.
+
+Nel **sessions/list.html.erb** inserisco `<%= link_to history_path(user), remote: true do %>  <i class="icon-time"></i><% end %>` all'interno della colonna AZIONI.
+
+Quando premuta l'icona va a richiamare `def showHistory` come configurato nel file **config/routes.rb** dove ho aggiunto `get '/history', to: 'users#showHistory'`
+```
+  def showHistory
+    puts "SHOW-HISTORY(params): #{params.inspect} #{params[:format]}"
+    user = User.find(params[:format])
+    @history = user.history
+  end
+```
+
+`def showHistory` riceve l'ID dell'utente come parametro sotto la voce **:format** da cui ricavo il record dell'utente e quindi anche la sua HISTORY.
+
+Quindi viene richiamata la view **users/showHistory.js.erb** che mostra la finestra MODAL in cui visualizzare il contenuto come specificato da **users/_showHistory.html.erb**
+
+Per inserire le varie informazioni su gli utenti, mi vado a definire una funzione privata 
+```
+  def AddHistory(user, text)
+    puts "AUTHOR: #{current_user[:email]}" 
+    if(! user.history) then user.history = "" end
+    user.history = DateTime.now.strftime("%d/%m/%Y  %I:%M%p") + " by " + current_user[:email] + "\n" + text + "\n\n" + user.history
+    user.save
+  end
+```
+
+che dato il testo da inserire e l'utente in cui inserire il testo inserisce il tutto compilato di autore e data/ora
+
+Quindi quand viene creato un nuovo utente e quando vienne aggiornato, uso questa funzione per inserire l'evento... `AddHistory(user, 'STATO '+ user.stato + ' --> ' + user_params[:stato])`
+
+### Commenti sugli utenti
+Inserisco una Colonna **commenti** alla tabella **Users** e alla tabella **Tasks**
+
+`bin/rails generate migration AddCommentiToTasks commenti:text`
+
+`bin/rails generate migration AddCommentiToUsers commenti:text`
+
+`rake db:migrate`
+
+Il resto è molto simile a quanto visto per la **storicità** ma con la differenza che nella finestra MODAL verrà caricato il contenuto del commento esistente, e che potrà essere modificato a piacimento, con un pulsante per salvare le modifiche.
+
+### Storicità delle Richieste
+Le richieste possono essere modificate dal gestore e la storicità delle modifiche dovrebbero essere mantenuto in una timeline.
+
+Una volta che la modifica viene salvata, la tabella della Richiesta viene aggiornata, e la tabella della storicità viene aggiunta una riga con il valore precedente....
+
+
 
 --------------------------------------------------------
 Inerisco una Colonna **history** alla tabella **Users** e alla tabella **Tasks**

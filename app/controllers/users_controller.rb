@@ -52,6 +52,19 @@ class UsersController < ApplicationController
     @history = user.history
   end
 
+  def showCommenti
+    puts "SHOW-COMMENTI(params): #{params.inspect} #{params[:format]}"
+    @user = User.find(params[:format])
+  end
+
+  def saveCommenti
+    puts "SAVE-COMMENTI(params): #{params.inspect} #{params[:userID]}"
+    @user = User.find(params[:userID])
+    @user.commenti = params[:commenti]
+    @user.save
+    redirect_to '/utenti'
+  end
+
   private
   def user_params
     params.require(:user).permit(:email, :apt, :password, :stato)
@@ -60,7 +73,7 @@ class UsersController < ApplicationController
   def AddHistory(user, text)
     puts "AUTHOR: #{current_user[:email]}" 
     if(! user.history) then user.history = "" end
-    user.history += DateTime.now.strftime("%d/%m/%Y  %I:%M%p") + " by " + current_user[:email] + "\n" + text + "\n\n"
+    user.history = DateTime.now.strftime("%d/%m/%Y  %I:%M%p") + " by " + current_user[:email] + "\n" + text + "\n\n" + user.history
     user.save
   end
   
