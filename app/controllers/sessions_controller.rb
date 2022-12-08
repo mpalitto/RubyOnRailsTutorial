@@ -7,24 +7,24 @@ class SessionsController < ApplicationController
   
   def create #invocata quando user preme il bottone di LOGIN
     puts "Session CREATE"
-    @user = User.find_by(email: params[:email])  #cerca utente ne DB
-    if !!@user && @user.authenticate(params[:password]) # nel caso tutto a posto
-      session[:email] = @user.email
+    $user = User.find_by(email: params[:email])  #cerca utente ne DB
+    if !!$user && $user.authenticate(params[:password]) # nel caso tutto a posto
+      session[:email] = $user.email
       puts "LOGGIN #{session[:email]}"
-      session[:ruolo] = @user.stato
-      if(@user.stato == "ARCHIVIATO" || @user.stato == nil || @user.stato == "NEW" )
+      session[:ruolo] = $user.stato
+      if($user.stato == "ARCHIVIATO" || $user.stato == nil || $user.stato == "NEW" )
         message = "ERRORE: Utente non APPROVATO o Archiviato"
-        puts message + " USER: "+ @user.inspect
+        puts message + " USER: "+ $user.inspect
         #redirect_to login_path, notice: message #dovrebbe andare chiedere se richiedere ad admin di ri-approvare le credenziali
         #render js:  "m = $('#modal'); m.html('<%= j(render partial: 'waiting4approval') %>'); m.modal('show');" 
         render 'waiting4approval'
       else
-        session[:user_id] = @user.id
-        if(@user.id == 1) then
+        session[:user_id] = $user.id
+        if($user.id == 1) then
           session[:ruolo] = "ADMIN"
-          @user.stato = "ADMIN";
+          $user.stato = "ADMIN";
         end
-        session[:apt] = @user.apt
+        session[:apt] = $user.apt
         #carica la pagina "pages/home"
         puts "CARICO HOME-PAGE"
         #redirect_to :controller => "pages", :action => "home"

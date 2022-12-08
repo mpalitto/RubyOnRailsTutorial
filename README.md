@@ -580,7 +580,12 @@ Le richieste possono essere modificate dal gestore e la storicità delle modific
 
 Una volta che la modifica viene salvata, la tabella della Richiesta viene aggiornata, e la tabella della storicità viene aggiunta una riga con il valore precedente....
 
-
+```
+  resource :tasks do
+    get 'history', on: :member
+    get 'commenti', on: :member
+  end
+```
 
 --------------------------------------------------------
 Inerisco una Colonna **history** alla tabella **Users** e alla tabella **Tasks**

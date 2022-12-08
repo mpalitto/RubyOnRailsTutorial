@@ -20,8 +20,11 @@ Rails.application.routes.draw do
   get '/commenti', to: 'users#showCommenti'
   post '/saveCommenti', to: 'users#saveCommenti'
 
-  resource :tasks, only: [] do
+  resource :tasks do
     get 'clear', on: :member
+    get 'history', on: :member
+    get 'commenti', on: :member
+    post 'saveCommenti', on: :member
   end
   resources :tasks,  except:  [:index, :show] 
   resources :stati_richiesta,  except:  [:index, :show] 

@@ -6,7 +6,7 @@ class UsersController < ApplicationController
   
   def new
     @user = User.new
-    apts = Appartamenti.all
+    apts = Appartamenti.all    
     @appartamenti = apts.map { |s| [s.apt, s.apt] }
   end
 
@@ -18,11 +18,13 @@ class UsersController < ApplicationController
     @user = User.create(myParams)
     if @user.save
       puts "User: #{@user.id} WAS SAVED"
-      AddHistory(user, 'STATO  --> NEW (registrazione nuovo utente)')
+      AddHistory(@user, 'STATO  --> NEW (registrazione nuovo utente)')
       redirect_to login_path
     else
       puts "FAIL to save NEW USER"
-      render "new"
+      apts = Appartamenti.all    
+      @appartamenti = apts.map { |s| [s.apt, s.apt] }
+      render 'new'
     end
   end
 

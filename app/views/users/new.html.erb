@@ -1,7 +1,9 @@
+<div class="container">
+
 <h1>Registrazione Nuovo Utente</h1>
 
 <%= form_for @user do |f| %>
-  <%= f.label :Email %>
+  <%= f.label :Email %><% if @user.errors.any? %><span class="text-error"> ERRORE Utente già registrato</span><% end %>
   <%= f.email_field :email %><br>
   <%= f.label :apt %>
   <%= f.select(:apt, @appartamenti, {}, {class: "form-control"}) %>
@@ -9,3 +11,5 @@
   <%= f.password_field :password %>
   <%= f.submit "Crea Account" %>
 <% end %>    
+<%= link_to 'LOGIN', login_path %>
+</div>

@@ -1,0 +1,32 @@
+m = $('#modal');
+m.html('<%= j(render partial: 'commenti', locals: {taskComments: @taskComments, task: @task}) %>');
+m.modal('show');
+
+  
+function myFunction(p1, p2) {
+  document.querySelector('#edit').value = p2.children.item(1).innerHTML;
+  selected = document.querySelector('.selected');
+  if(selected) {
+    selected.style.backgroundColor = "blue";
+    selected.classList.remove("selected");
+  }
+  p2.style.backgroundColor = "red";
+  p2.classList.add("selected");
+  document.querySelector('#comN').value = p2.id;
+  document.querySelector('#del').style.display = "inline";
+}
+
+function del() {
+  document.querySelector('#comN').value += ' DEL';
+}
+
+function myNew() {
+  document.querySelector('#comN').value = 'NEW'; 
+  document.querySelector('#del').style.display = "none";
+  selected = document.querySelector('.selected');
+  if(selected) {
+    selected.style.backgroundColor = "blue";
+    selected.classList.remove("selected");
+  }
+  document.querySelector('#edit').value = "";
+}
