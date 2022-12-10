@@ -5,10 +5,10 @@
     <table class="table table-hover table-bordered">
       <thead>
         <tr>
-          <th>Oggetto</th>
-          <th>Data di Richiesta</th>
-          <th>Urgenza</th>
-          <th>Stato</th>
+          <th><%= sortable "oggetto"%></th>
+          <th><%= sortable "created_at", "data"%></th>
+          <th><%= sortable "urgenza"%></th>
+          <th><%= sortable "stato"%></th>
           <th>Azioni</th>
         </tr>
       </thead>

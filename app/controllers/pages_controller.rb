@@ -2,7 +2,9 @@ class PagesController < ApplicationController
   before_action :authorize
 
   def home
-    @tasks = Task.where('apt = "' + session[:apt] + '"')
+    params[:sort] ||= 'created_at'       #definisco il valore di default
+    params[:direction] ||= 'asc'  #definisco il valore di default
+    @tasks = Task.where('apt = "' + session[:apt] + '"').order(params[:sort] + ' ' + params[:direction]) #lista ordinata
     puts "Generazione vettore STATI..."
     statiPossibili = StatoRichiestaManutenzione.all
     #statiPossibili.map {|s| puts "statiPossibili: #{s.valoriPossibili}"}
