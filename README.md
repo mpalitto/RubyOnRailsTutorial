@@ -578,7 +578,7 @@ Il resto è molto simile a quanto visto per la **storicità** ma con la differen
 ### Storicità delle Richieste
 Le richieste possono essere modificate dal gestore e la storicità delle modifiche dovrebbero essere mantenuto in una timeline.
 
-Una volta che la modifica viene salvata, la tabella della Richiesta viene aggiornata, e la tabella della storicità viene aggiunta una riga con il valore precedente....
+Una volta che la modifica viene salvata, la tabella della Richiesta viene aggiornata, e la colonna della storicità viene aggiornata aggiungendo una riga al valore precedente....
 
 ```
   resource :tasks do
@@ -586,27 +586,152 @@ Una volta che la modifica viene salvata, la tabella della Richiesta viene aggior
     get 'commenti', on: :member
   end
 ```
-
---------------------------------------------------------
-Inerisco una Colonna **history** alla tabella **Users** e alla tabella **Tasks**
- 
-`bin/rails generate migration AddHistoryToTasks history:text`
-
-`bin/rails generate migration AddHistoryToUsers history:text`
-
-`rake db:migrate`
-
-nel **users_controller.rb** inserisco una funzione
+nel **tasks_controller.rb** inserisco una funzione che uso quando qualcosa viene modificato nel record della Richiesta
 ```
-  def AddHistory(user, text)
-    puts "AUTHOR: #{current_user[:email]}" 
-    if(! user.history) then user.history = "" end
-    user.history += DateTime.now.strftime("%d/%m/%Y  %I:%M%p") + " by " + current_user[:email] + '\n' + text + '\n\n'
-    user.save
+def AddRecord(rec, type, text)
+  puts "ADD-RECORD:"
+  puts text
+  puts "AUTHOR: #{$user.email}" + $user.inspect
+  if(! rec[type]) then rec[type] = "" end
+  rec[type] = DateTime.now.strftime("%d/%m/%Y  %I:%M%p") + " by " + $user[:email] + "\n" + text.gsub(/\n\n+/,'\n') + "\n\n" + rec[type]
+  rec.save
+end
+```
+e sempre nello stesso **tasks_controller.rb** vado a mostrare la storicità della Richiesta selezionata nel MODAL window
+```
+  def history # va a prendere la storicità della Richiesta selezionata
+    #puts "SHOW-HISTORY(params): #{params.inspect} #{params[:format]}"
+    task = Task.find(params[:format])
+    @history = task.history
   end
 ```
-che uso quando qualcosa viene modificato nel record dell'utente
+### Commenti sulle Richieste
+Avendo già provveduto al **routing** e alla modifica del DB insieme a quanto fatto per la **storicità**,
+il resto che rimane da fare è concettualmente simile a quanto fatto per la storicià ma differente in quanto voglio aggiungere
+la possibilità di inserire nuovi commenti, ma anche modificarli e cancellarli (naturalmente solo l'autore può accedere a qeste possibilità)
 
+Per fare ciò devo poter identificare i vari commenti creando, dal testo contenuto nel DB, un array di oggetti
+```
+commenti = [{author: 'blabla@bla.com', head: '10/12/22 11:11PM by blabla@bla.com', body: 'commento vero e proprio'},{...},...]
+```
+nel **task_controller.rb**
+```
+def commenti
+...
+    taskComments = @task.commenti.split("\n\n") #separo un commento dall'altro in un array
+    # per ogni commento genero l'oggetto estrapolando le varie informazioni
+    taskComments.each() {|c| 
+      c += "\n" # inserisco un "newline" nel caso, per motivi storici, il campo del DB contenga commenti non formattati correttamente
+      head = c.match(/.*\n/)[0] # ricavo l'informazione HEAD contenuta nella prima riga
+      @taskComments.push({
+        author: head.gsub(/.* by /,''),  # estraggo l'autore da HEAD
+        head: head,                      # inserisco HEAD
+        body: c.gsub(head, '')           # ricavo il commento vero e proprio rimuovendo la prima riga
+      })
+...
+```
+quando visualizzo i commenti nel MODAL li circondo da dei DIV, uno per il commento generale, e 2 interni per HEAD e BODY del commento **views/tasks/_commenti.html.erb**
+```
+...
+        <% taskComments.each_with_index do |commento, idx| %>            
+          <div onclick="myFunction(event, this)" id="<%= idx %>" style="margin: 5px; padding: 5px; border-style: solid; border-color: blue; border-radius: 5px; background-color: lightseagreen">
+            <div style="background-color: lightgray"><%= commento[:head] %></div>
+            <div style="background-color: lightblue"><%= commento[:body] %></div>
+          </div>
+        <% end %>
+...
+```
+NOTA: inserisco l'indice per riconoscere quale Commento è selezionato, e inserisco una funzione JS percambiare il colore del bordo e quindi segnalare quale Commento è selezionato e per inserire il commento nella `textarea` per l'eventuale modifica.
+La funzione si trova nel file **views/tasks/commenti.js.erb**
+
+### Rimuovo bootstrap
+more pains than gains...
+
+il nuovo **app/javascript/application.js**
+```
+//= require jquery
+//= require jquery_ujs
+//= require_tree .
+```
+
+Per poter accedere alle ICONE del **font awesome** inserisco nel file **app/layout/application.html.erb**
+```
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+```
+
+### Riordino Tabella 
+Sarebbe interessante avere delle tabelle che siano ordinabili in modo crescente o decrescente a seconda dell'intestazione della colonna cliccata. Inizio dalla tabella degli **Users**
+
+Per facilitare l'uso anche futuro su altre tabelle, creo un **view helper** e lo inserisco nell'**app/helpers/application_helper.rb**
+```
+module ApplicationHelper
+  #rende l'intestazione di una tabella HTML un link per ordinare la tabella in modo crescente o decrescente
+  #e aggiunge una icona alla colonna cliccata che ne indica la direzione di ordinamento
+  def sortable(column, title = nil)
+    title ||= column.titleize
+    me = (column == params[:sort]) #la colonna che è stata cliccata coincide con quella cliccata prima?
+    direction = (me && params[:direction] == "asc") ? "desc" : "asc" #se coincide allora toggle la direzione, altrimenti seleziona asc
+
+    #nella colonna cliccata inserisci l'icona a seconda della direzione
+    if(me && direction == "asc")
+      (link_to title, :sort => column, :direction => direction) + "   <i id='email' class='fa fa-thumbs-down'></i>".html_safe
+    elsif(me && direction == "desc")
+      (link_to title, :sort => column, :direction => direction) + "   <i id='email' class='fa fa-thumbs-up'></i>".html_safe
+    else #altrimenti, per le altre colonne, non aggiungere l'icona
+      link_to title, :sort => column, :direction => direction
+    end
+  end
+end
+```
+nel **users_controller.rb** inserisco la generazione della lista con l'ordine selezionato
+```
+  def list #crea la lista degli utenti
+    params[:sort] ||= 'apt'       #definisco il valore di default
+    params[:direction] ||= 'asc'  #definisco il valore di default
+    @nuovi = User.where(stato: "NEW")  #lista utenti in attesa di approvazione
+    @users = User.where.not(stato: "NEW").order(params[:sort] + ' ' + params[:direction]) #lista ordinata utenti in essere
+    @stati = [['NEW','NEW'],['INQUILINO','INQUILINO'],['GESTORE','GESTORE'],['ADMIN','ADMIN'],['ARCHIVIATO','ARCHIVIATO']]
+  end
+```
+Non resta che usare l'helper **sortable** creato nel **views/users/list.html.erb** nelle intestazioni l'addove voglio inserire la facoltà di ri-ordino della tabella
+```
+...
+    <h2>Utenti Attivi</h2>
+    <table class="table table-hover table-bordered">
+      <thead>
+        <tr>
+          <th><%= sortable "email"%></th>
+          <th><%= sortable "stato"%></th>
+          <th><%= sortable "apt" %> </th>
+          <th>Azioni</th>
+        </tr>
+      </thead>
+      <tbody>
+        <%= render partial: @users %>
+      </tbody>
+    </table> 
+...
+```
+NOTA: per il body della tabella utilizzo in PARTIAL passando direttamente la lista... il partial dovrà essere chiamato **view/users/_user.html.erb** che userà al suo interno la variabile `<%= user %>` e specificando solamente la composizione di una sola riga
+```
+<tr>
+  <td>
+    <%= user.email %>
+  </td>
+  <td>
+    <%= simple_form_for user, class: 'clearfix', remote: true  do |f| %>
+      <%= f.select(:stato, @stati, {}, {:onchange => 'this.form.submit()', class: "form-control"}) %>
+    <% end %>
+  </td>
+  <td>
+    <%= user.apt %>
+  </td>
+  <td>
+    <%= link_to history_path(user), remote: true do %>  <i class="icon-time"></i><% end %>
+    <%= link_to commenti_path(user), remote: true do %>  <i class="icon-comment"></i><% end %>
+  </td>
+</tr>
+```
 
 # RubyOnRailsTutorial
 by Prof. Palitto

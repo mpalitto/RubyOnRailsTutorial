@@ -31,13 +31,13 @@
                 <%= f.select(:stato, stati, {}, {:onchange => 'this.form.submit()', class: "form-control"}) %>
               <% end %>
             </td>
-            <td class="text-success">
+            <td class="text-success" style="font-size:24px">
               <% if(task.email == session[:email]) %>
-                <%= link_to task_path(task), method: :delete, remote: true, data: {confirm: "Are you sure you want to delete task #{task.oggetto}?"} do %>  <i class="icon-remove"></i><% end %>                
-                <%= link_to edit_tasks_path(task), remote: true do %>  <i class="icon-pencil"></i><% end %>
+                <%= link_to task_path(task), method: :delete, remote: true, data: {confirm: "Are you sure you want to delete task #{task.oggetto}?"} do %>  <i class="fa fa-trash"></i><% end %>                
+                <%= link_to edit_tasks_path(task), remote: true do %>  <i class="fa fa-pencil-square-o"></i><% end %>
               <% end %>
-              <%= link_to history_tasks_path(task), remote: true do %>  <i class="icon-time"></i><% end %>
-              <%= link_to commenti_tasks_path(task), remote: true do %>  <i class="icon-comment"></i><% end %>
+              <%= link_to history_tasks_path(task), remote: true do %>  <i class="fa fa-history"></i><% end %>
+              <%= link_to commenti_tasks_path(task), remote: true do %>  <i class="fa fa-commenting-o"></i><% end %>
             </td>
             
           </tr>

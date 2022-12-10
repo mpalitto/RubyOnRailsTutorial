@@ -5,6 +5,7 @@
         <tr>
           <th>email</th>
           <th>Stato</th>
+          <th>APT</th>
           <th>Azioni</th>
         </tr>
       </thead>
@@ -20,6 +21,9 @@
               <% end %>
             </td>
             <td>
+              <%= user.apt %>
+            </td>
+            <td>
               <%= link_to history_path(user), remote: true do %>  <i class="icon-time"></i><% end %>
               <%= link_to commenti_path(user), remote: true do %>  <i class="icon-comment"></i><% end %>
             </td>
@@ -31,28 +35,14 @@
     <table class="table table-hover table-bordered">
       <thead>
         <tr>
-          <th>email</th>
-          <th>Stato</th>
+          <th><%= sortable "email"%></th>
+          <th><%= sortable "stato"%></th>
+          <th><%= sortable "apt" %> </th>
           <th>Azioni</th>
         </tr>
       </thead>
       <tbody>
-        <% @users.each do |user| %>
-          <tr>
-            <td>
-              <%= user.email %>
-            </td>
-            <td>
-              <%= simple_form_for user, class: 'clearfix', remote: true  do |f| %>
-                <%= f.select(:stato, @stati, {}, {:onchange => 'this.form.submit()', class: "form-control"}) %>
-              <% end %>
-            </td>
-            <td>
-              <%= link_to history_path(user), remote: true do %>  <i class="icon-time"></i><% end %>
-              <%= link_to commenti_path(user), remote: true do %>  <i class="icon-comment"></i><% end %>
-            </td>
-          </tr>
-        <% end %>
+        <%= render partial: @users %>
       </tbody>
     </table>    
 </div>

@@ -1,3 +1,4 @@
+<div class="container">
 <table>
 <tbody>
 <tr>
@@ -17,16 +18,19 @@
   </td>
   <td>
     <form action="/tasks/saveCommenti" method="POST">
-      <button id="del" style="display: none" onclick="del()" >DEL</button>
-      <button type="submit" >SAVE</button>
+      <!--button id="dell"  type="submit" style="display: none" >DEL</button>
+      <button type="submit" >SAVEE</button-->
+<input type="submit" name="SAVEbutton" value="SAVE" />
+<input type="submit" id="del" name="DELbutton" style="display: none" value="DEL" />
       <div>
       <textarea id="edit" name="commento" data-remote="true" rows="20" cols="100">
       </textarea>
       <input type="hidden" name="taskID" value="<%= task.id %>">
-      <input type="hidden" id="comN" name="comN" value="">
+      <input type="hidden" id="comN" name="comN" value="NEW">
       </div>
     </form>
   </td>
 </tr>
 </tbody>
 </table>
+</div>

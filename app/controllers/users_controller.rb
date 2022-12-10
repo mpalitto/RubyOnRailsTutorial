@@ -28,15 +28,19 @@ class UsersController < ApplicationController
     end
   end
 
-  def show
+  def show #mostra profilo utente
     @user = User.find(params[:user_id])
   end
 
-  def list
-    @nuovi = User.where(stato: "NEW")
-    @users = User.where.not(stato: "NEW")
+  def list #crea la lista degli utenti
+    params[:sort] ||= 'apt'       #definisco il valore di default
+    params[:direction] ||= 'asc'  #definisco il valore di default
+    #puts params[:sort] 
+    #puts params[:direction]
+    @nuovi = User.where(stato: "NEW")  #lista utenti in attesa di approvazione
+    @users = User.where.not(stato: "NEW").order(params[:sort] + ' ' + params[:direction]) #lista ordinata utenti in essere
     @stati = [['NEW','NEW'],['INQUILINO','INQUILINO'],['GESTORE','GESTORE'],['ADMIN','ADMIN'],['ARCHIVIATO','ARCHIVIATO']]
-    puts @users.inspect
+    #puts @users.inspect
   end
 
   def update

@@ -40,7 +40,7 @@ class SessionsController < ApplicationController
     puts "LOGOUT: #{session[:user_id]}"
     session[:user_id] = nil
     puts "LOGOUT: #{session[:user_id]}"
-    @current_user = nil
+    $user = nil
     redirect_to '/login'
     #session[:user_id] = nil
     #redirect_to root_path
