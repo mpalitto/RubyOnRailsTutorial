@@ -47,7 +47,7 @@ end
     @task = Task.find(params[:format])
     #AddRecord(@task, 'commenti', "balle belle")
     taskComments = []
-    @taskComments = []
+    @comments = []
     #taskComments = @task.commenti.scan(/.*\n\n/m)
     if (!@task.commenti) 
       @task.commenti = ""
@@ -59,18 +59,18 @@ end
     taskComments.each() {|c| 
       c += "\n" # inserisco un "newline" nel caso, per motivi storici, il campo del DB contenga commenti non formattati correttamente
       head = c.match(/.*\n/)[0] # ricavo l'informazione HEAD contenuta nella prima riga
-      @taskComments.push({
-        author: head.gsub(/.* by /,''),  # estraggo l'autore da HEAD
+      @comments.push({
+        author: head.gsub(/.* by (.*)\n/,'\1'),  # estraggo l'autore da HEAD
         head: head,                      # inserisco HEAD
         body: c.gsub(head, '')           # ricavo il commento vero e proprio rimuovendo la prima riga
       })
     }
-    #puts 'MP --> ' + @taskComments.inspect
+    #puts 'MP --> ' + @comments.inspect
   end
 
   def saveCommenti
     #puts "SAVE-COMMENTI(params): #{params.inspect} #{params[:DELbutton]} #{params[:taskID]} #{params[:commento]} #{params[:comN]}"
-    @task = Task.find(params[:taskID])
+    @task = Task.find(params[:ID])
     #puts "SAVE-COMMENTI(task): #{@task.inspect}"
     if(params[:comN] != 'NEW') 
       #puts "SAVING MODIFIED COMMENT N. #{params[:comN]}"

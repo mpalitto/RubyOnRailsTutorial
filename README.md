@@ -644,13 +644,17 @@ quando visualizzo i commenti nel MODAL li circondo da dei DIV, uno per il commen
 NOTA: inserisco l'indice per riconoscere quale Commento è selezionato, e inserisco una funzione JS percambiare il colore del bordo e quindi segnalare quale Commento è selezionato e per inserire il commento nella `textarea` per l'eventuale modifica.
 La funzione si trova nel file **views/tasks/commenti.js.erb**
 
-### Rimuovo bootstrap
+### Rimuovo bootstrap modal
 more pains than gains...
+
+rimuovo `//= require boostrap-datepicker`
 
 il nuovo **app/javascript/application.js**
 ```
 //= require jquery
 //= require jquery_ujs
+//= require boostrap
+//= require boostrap-datepicker
 //= require_tree .
 ```
 
@@ -732,6 +736,10 @@ NOTA: per il body della tabella utilizzo in PARTIAL passando direttamente la lis
   </td>
 </tr>
 ```
+### Aggiornamento Commenti su Utenti
+vista la fatica fatta per i commenti sulle Richieste, estendo il lavoro ai commenti sugli utenti... per lo meno
+
+
 
 # RubyOnRailsTutorial
 by Prof. Palitto

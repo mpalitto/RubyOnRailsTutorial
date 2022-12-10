@@ -58,23 +58,82 @@ class UsersController < ApplicationController
     @history = user.history
   end
 
-  def showCommenti
+  def ccommenti
     puts "SHOW-COMMENTI(params): #{params.inspect} #{params[:format]}"
     @user = User.find(params[:format])
   end
 
+  def showCommenti
+    #puts "SHOW-COMMENTI(params): #{params.inspect} #{params[:format]}"
+    @user = User.find(params[:format])
+    #AddRecord(@user, 'commenti', "balle belle")
+    userComments = []
+    @comments = []
+    #userComments = @user.commenti.scan(/.*\n\n/m)
+    if (!@user.commenti) 
+      @user.commenti = ""
+    end
+    userComments = @user.commenti.split("\n\n") #separo un commento dall'altro in un array
+    #puts "TASK-COMMENTS:"
+    #puts userComments.inspect
+    # per ogni commento genero l'oggetto estrapolando le varie informazioni
+    userComments.each() {|c| 
+      c += "\n" # inserisco un "newline" nel caso, per motivi storici, il campo del DB contenga commenti non formattati correttamente
+      head = c.match(/.*\n/)[0] # ricavo l'informazione HEAD contenuta nella prima riga
+      @comments.push({
+        author: head.gsub(/.* by (.*)\n/,'\1'),  # estraggo l'autore da HEAD
+        head: head,                      # inserisco HEAD
+        body: c.gsub(head, '')           # ricavo il commento vero e proprio rimuovendo la prima riga
+      })
+    }
+    #puts 'MP --> ' + @comments.inspect
+  end
+  
   def saveCommenti
-    puts "SAVE-COMMENTI(params): #{params.inspect} #{params[:userID]}"
-    @user = User.find(params[:userID])
-    @user.commenti = params[:commenti]
-    @user.save
+    #puts "SAVE-COMMENTI(params): #{params.inspect} #{params[:DELbutton]} #{params[:userID]} #{params[:commento]} #{params[:comN]}"
+    @user = User.find(params[:ID])
+    #puts "SAVE-COMMENTI(user): #{@user.inspect}"
+    if(params[:comN] != 'NEW') 
+      #puts "SAVING MODIFIED COMMENT N. #{params[:comN]}"
+      n = params[:comN].to_i
+      del = params[:DELbutton]
+      userComments = []
+      userComments = @user.commenti.scan(/.*\n.*\n\n/)
+      #puts userComments.inspect
+      commenti = ""
+      userComments.each_with_index() {|c, i| 
+        if(i != n) 
+          puts "i: " + i.to_s + "n: " + n.to_s
+          commenti += c
+        else
+          puts "DELETING: " + c
+        end
+      }
+      @user.commenti = commenti
+    end
+    #puts "COMMENTI: " 
+    #puts @user.commenti
+    if(del != 'DEL')
+      AddRecord(@user, 'commenti', params[:commento])
+    else
+      @user.save
+    end
     redirect_to '/utenti'
   end
-
+  
   private
   def user_params
     params.require(:user).permit(:email, :apt, :password, :stato)
   end
+
+  def AddRecord(rec, type, text)
+  puts "ADD-RECORD:"
+  puts text
+  puts "AUTHOR: #{$user.email}" + $user.inspect
+  if(! rec[type]) then rec[type] = "" end
+  rec[type] = DateTime.now.strftime("%d/%m/%Y  %I:%M%p") + " by " + $user[:email] + "\n" + text.gsub(/\n\n+/,'\n') + "\n\n" + rec[type]
+  rec.save
+end
 
   def AddHistory(user, text)
     puts "AUTHOR: #{current_user[:email]}" 

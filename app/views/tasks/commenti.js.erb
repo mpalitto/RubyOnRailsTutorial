@@ -1,5 +1,5 @@
 m = $('#modal');
-m.html('<%= j(render partial: 'commenti', locals: {taskComments: @taskComments, task: @task}) %>');
+m.html('<%= j(render partial: 'commenti', locals: {comments: @comments, elemento: @task, controller: 'tasks'}) %>');
 m.modal('show');
 
   

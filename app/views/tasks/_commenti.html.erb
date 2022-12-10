@@ -3,13 +3,17 @@
 <tbody>
 <tr>
   <td>
-    <div id="commenti">
+    <div id="commenti" style="margin-top: 70px; width: 500px; height: 500px; overflow: auto">
       <div style="margin: 5px; padding: 5px; border-style: solid; border-color: blue; border-radius: 5px; background-color: lightseagreen; text-align: center;">
         <button style="display: inline; width: 100%" onclick="myNew()" >NEW</button>
       </div>
         
-        <% taskComments.each_with_index do |commento, idx| %>            
-          <div onclick="myFunction(event, this)" id="<%= idx %>" style="margin: 5px; padding: 5px; border-style: solid; border-color: blue; border-radius: 5px; background-color: lightseagreen">
+        <% comments.each_with_index do |commento, idx| %>  
+          <% if(commento[:author] == $user.email) %>
+            <div onclick="myFunction(event, this)" id="<%= idx %>" style="margin: 5px; padding: 5px; border-style: solid; border-color: blue; border-radius: 5px; background-color: lightseagreen">
+          <% else %>
+            <div style="margin: 5px; padding: 5px; border-style: solid; border-color: blue; border-radius: 5px; background-color: lightseagreen">
+          <% end %>
             <div style="background-color: lightgray"><%= commento[:head] %></div>
             <div style="background-color: lightblue"><%= commento[:body] %></div>
           </div>
@@ -17,15 +21,15 @@
     </div>
   </td>
   <td>
-    <form action="/tasks/saveCommenti" method="POST">
+    <form action="<%= controller %>/saveCommenti" method="POST">
       <!--button id="dell"  type="submit" style="display: none" >DEL</button>
       <button type="submit" >SAVEE</button-->
 <input type="submit" name="SAVEbutton" value="SAVE" />
 <input type="submit" id="del" name="DELbutton" style="display: none" value="DEL" />
       <div>
-      <textarea id="edit" name="commento" data-remote="true" rows="20" cols="100">
+      <textarea id="edit" name="commento" data-remote="true" rows="20" cols="40">
       </textarea>
-      <input type="hidden" name="taskID" value="<%= task.id %>">
+      <input type="hidden" name="ID" value="<%= elemento.id %>">
       <input type="hidden" id="comN" name="comN" value="NEW">
       </div>
     </form>
