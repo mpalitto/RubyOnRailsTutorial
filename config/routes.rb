@@ -21,6 +21,7 @@ Rails.application.routes.draw do
   post '/saveCommenti', to: 'users#saveCommenti'
 
   resource :tasks do
+    get 'filter_apt', on: :member
     get 'clear', on: :member
     get 'history', on: :member
     get 'commenti', on: :member

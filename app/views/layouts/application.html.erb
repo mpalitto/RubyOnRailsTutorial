@@ -20,13 +20,19 @@
           Richiesta Manutenzioni
         </h1>
         <% if $user %>
-          <% puts "UTENTE: #{$user}" %>
+          <% puts "UTENTE: #{$user.inspect}" %>
         <p>
           inserisci e gestisci le richieste per <b><%= $user.apt %></b>
         </p>  
             <% puts "URL: #{request.path}" %>
           <h4 class="benvenuto">Benvenuto <%= $user.email %>      <a class="btn btn-primary" href="/logout">Log Out</a> 
-            <% if session[:ruolo] == "ADMIN" %> <% if(request.path == '/home') %><a class="btn btn-primary" href="/utenti">Utenti</a> <% end %><% if(request.path == '/utenti') %><a class="btn btn-primary" href="/home">Home</a> <% end %> <% end %>
+            <% if $user[:stato] == "ADMIN" %> 
+              <% if(request.path == '/utenti') %>
+                <a class="btn btn-primary" href="/home">Home</a> 
+              <% else %>
+                <a class="btn btn-primary" href="/utenti">Utenti</a> 
+              <% end %> 
+            <% end %>
           </h4>
         <% else %>
         <p>

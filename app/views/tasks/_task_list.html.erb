@@ -1,11 +1,18 @@
 <div class="container">
+  <% if(apts != nil) %>
+    <%= form_with url: "/tasks/filter_apt", method: :get, remote: true  do |f| %>
+      <%= f.select(:apt, apts, {:selected => params[:apt] || 'tutti'}, {:onchange => 'this.form.submit()', class: "form-control"}) %>
+    <% end %>
+  <% end %>
+  
   <% if !tasks %>
-    <span class="text-warning">There are no tasks!</span>
+    <span class="text-warning">NON CI SONO RICHIESTE!</span>
   <% else %>
     <table class="table table-hover table-bordered">
       <thead>
         <tr>
           <th><%= sortable "oggetto"%></th>
+          <th>APT</th>
           <th><%= sortable "created_at", "data"%></th>
           <th><%= sortable "urgenza"%></th>
           <th><%= sortable "stato"%></th>
@@ -17,22 +24,30 @@
           <tr>
             <td>
               <strong>
+                <%= link_to edit_tasks_path(task), remote: true do %>  <i class="fa fa-pencil-square-o"></i><% end %>
                 <%= task.oggetto %>
               </strong>
+            </td>
+            <td class="text-info">
+              <%= task.apt %>
             </td>
             <td class="text-info">
               <%= task.created_at %>
             </td>
             <td class="text-success">
-              <%= task.urgenza %>
+              <%= task.urgenza.to_s %>
             </td>
             <td class="text-success">
-              <%= simple_form_for task, class: 'clearfix', remote: true  do |f| %>
-                <%= f.select(:stato, stati, {}, {:onchange => 'this.form.submit()', class: "form-control"}) %>
+              <% if $is_gestore %>
+                <%= simple_form_for task, class: 'clearfix', remote: true  do |f| %>
+                  <%= f.select(:stato, stati, {}, {:onchange => 'this.form.submit()', class: "form-control"}) %>
+                <% end %>
+              <% else %>
+                <%= task.stato %>
               <% end %>
             </td>
             <td class="text-success" style="font-size:24px">
-              <% if(task.email == session[:email]) %>
+              <% if(task.email == $user[:email]) %>
                 <%= link_to task_path(task), method: :delete, remote: true, data: {confirm: "Are you sure you want to delete task #{task.oggetto}?"} do %>  <i class="fa fa-trash"></i><% end %>                
                 <%= link_to edit_tasks_path(task), remote: true do %>  <i class="fa fa-pencil-square-o"></i><% end %>
               <% end %>

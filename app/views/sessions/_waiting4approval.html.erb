@@ -1,6 +1,8 @@
-<% if(session[:ruolo] == "ARCHIVIATO") %>
-  <h2>Utente archiviato, se si desidera riattivare l'accesso premere il tasto</h2>
+<div style="padding: 100px;  background-color: coral; text-align: center">
+<% if($user[:stato] == "ARCHIVIATO") %>
+  <h1>Utente archiviato, se si desidera riattivare l'accesso premere il tasto</h1>
   <%= link_to 'richiedi RIATTIVAZIONE',  '/riattiva',  class:  'btn btn-primary', remote: true  %>  
 <% else %>
-  <h2>Utente registrato ma... in attesa di approvazione!</h2>
+  <h1>Utente registrato ma... in attesa di approvazione!</h1>
 <% end %>
+</div>

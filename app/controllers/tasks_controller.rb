@@ -4,36 +4,84 @@ class TasksController < ApplicationController
 def new
   #puts "Matteo --> New Task Modal Window"
   @task = Task.new
+  @apts = $apts #Appartamenti.all.map(&:apt) #.map(|apt| apt.apt)
+  puts @apts.inspect
 end
 
 def clear
   #puts "Matteo --> Clear List"
   Task.destroy_all
+  redirect_to '/home'
 end
 
+def edit
+  puts params.inspect
+  #puts "Matteo --> Edit ToDo"
+  @task = Task.find(params[:format])
+  #@tasks = Task.all
+end
+  
 def destroy
   #puts "Matteo --> Remove ToDo"
   Task.find(params[:id]).destroy
-  @tasks = Task.all
+  if $is_gestore
+    @apts = $apts
+    @tasks = Task.all
+  else
+    @apts = []
+    @tasks = Task.where('apt = "' + $user[:apt] + '"')
+  end
+ #redirect_to '/home'
 end
 
 def create
+  puts params.inspect
   myP = {}
   myP = task_params
-  myP[:email] = session[:email]
-  myP[:apt] = session[:apt]
+  myP[:email] = $user[:email]
+  if(!$is_gestore)
+    myP[:apt] = $user[:apt]
+  end
   #puts "Matteo --> Create New Task with params: #{myP}"
   @task = Task.create(myP)
   AddRecord(@task, 'history', 'STATO  --> NEW (registrazione nuova Richiesta)')
-  @tasks = Task.where('apt = "' + session[:apt] + '"')
+  @tasks = Task.where('apt = "' + $user[:apt] + '"')
+  @apts = nil
+  if $is_gestore
+    @tasks = Task.all
+    @apts = Task.select(:apt).map(&:apt).uniq #calcola la lista degli APT presenti nelle Richieste attive
+    @apts.push('tutti') #aggiungi la lista completa
+  end
+  redirect_to '/home'
+end
+
+def filter_apt
+  params[:sort] ||= 'created_at'       #definisco il valore di default
+  params[:direction] ||= 'asc'  #definisco il valore di default
+  if(params[:apt] == 'tutti')
+    @tasks = Task.all.order(params[:sort] + ' ' + params[:direction]) #lista ordinata  
+  else
+    @tasks = Task.where('apt = "' + params[:apt] + '"').order(params[:sort] + ' ' + params[:direction]) #lista ordinata  
+  end
+    @apts = Task.select(:apt).map(&:apt).uniq #calcola la lista degli APT presenti nelle Richieste attive
+    @apts.push('tutti') #aggiungi la lista completa
 end
 
 def update
   #puts "Matteo --> Update Task with params: #{params[:id]}"
+  puts task_params.inspect
   task = Task.find(params[:id])
-  AddRecord(task, 'history', 'STATO '+ task.stato + ' --> ' + task_params[:stato])
-  task.stato = task_params[:stato]
+
+  puts 'URGENZA: ' 
+  puts task.urgenza && task.urgenza.strftime("%e/%m/%Y") 
+  puts task_params[:urgenza]
+  if((task.urgenza && task.urgenza.strftime("%e/%m/%Y")) != task_params[:urgenza])
+    puts "UPDATING: URGENZA"
+    AddRecord(task, 'history', 'URGENZA ' + ((task.urgenza && task.urgenza.strftime("%e/%m/%Y"))||'') + ' --> ' + (task_params[:urgenza] && task_params[:urgenza]))
+    task.urgenza = task_params[:urgenza]
+  end
   task.save
+  redirect_to '/home'
 end
 
   def history
@@ -62,7 +110,9 @@ end
       @comments.push({
         author: head.gsub(/.* by (.*)\n/,'\1'),  # estraggo l'autore da HEAD
         head: head,                      # inserisco HEAD
-        body: c.gsub(head, '')           # ricavo il commento vero e proprio rimuovendo la prima riga
+        body: c.gsub(head, '')           # ricavo il commento vero e proprio rimuovendo la prima riga    <% end %>    <% end %>
+
+
       })
     }
     #puts 'MP --> ' + @comments.inspect
@@ -103,7 +153,7 @@ end
 # private methods
 private
 def task_params
-  params.require(:task).permit(:oggetto, :richiesta, :urgenza, :stato)
+  params.require(:task).permit(:oggetto, :richiesta, :urgenza, :stato, :apt)
 end
 
 def AddRecord(rec, type, text)

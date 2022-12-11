@@ -3,5 +3,5 @@
   <%= link_to 'Come non detto',  clear_tasks_path,  class:  'btn btn-primary', remote: true  %>
 </div>
 <div class="container" id="task-list">
- <%= render partial: 'tasks/task_list', locals: {stati: $stati, tasks: @tasks} %>
+ <%= render partial: 'tasks/task_list', locals: {stati: $stati, tasks: @tasks, apts: @apts} %>
 </div>

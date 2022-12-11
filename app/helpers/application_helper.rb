@@ -8,11 +8,11 @@ module ApplicationHelper
 
     #nella colonna cliccata inserisci l'icona a seconda della direzione
     if(me && direction == "asc")
-      (link_to title, :sort => column, :direction => direction) + "   <i id='email' class='fa fa-thumbs-down'></i>".html_safe
+      (link_to title, :sort => column, :direction => direction, :apt => params[:apt]) + "   <i id='email' class='fa fa-thumbs-down'></i>".html_safe
     elsif(me && direction == "desc")
-      (link_to title, :sort => column, :direction => direction) + "   <i id='email' class='fa fa-thumbs-up'></i>".html_safe
+      (link_to title, :sort => column, :direction => direction, :apt => params[:apt]) + "   <i id='email' class='fa fa-thumbs-up'></i>".html_safe
     else #altrimenti, per le altre colonne, non aggiungere l'icona
-      link_to title, :sort => column, :direction => direction
+      link_to title, :sort => column, :direction => direction, :apt => params[:apt]
     end
   end
 end

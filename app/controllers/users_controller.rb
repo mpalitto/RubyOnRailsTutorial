@@ -6,8 +6,9 @@ class UsersController < ApplicationController
   
   def new
     @user = User.new
-    apts = Appartamenti.all    
-    @appartamenti = apts.map { |s| [s.apt, s.apt] }
+    #apts = Appartamenti.all    
+    #@appartamenti = apts.map { |s| [s.apt, s.apt] }
+    @appartamenti = $apts
   end
 
   def create
@@ -15,14 +16,14 @@ class UsersController < ApplicationController
     myParams = user_params
     myParams[:stato] = "NEW"
     puts "Entering NEW USER #{myParams}"
-    @user = User.create(myParams)
-    if @user.save
-      puts "User: #{@user.id} WAS SAVED"
-      AddHistory(@user, 'STATO  --> NEW (registrazione nuovo utente)')
+    user = User.create(myParams)
+    if user.save
+      puts "User: #{user.id} WAS SAVED"
+      AddHistory(user, 'STATO  --> NEW (registrazione nuovo utente)')
       redirect_to login_path
     else
       puts "FAIL to save NEW USER"
-      apts = Appartamenti.all    
+      apts = $apts #Appartamenti.all    
       @appartamenti = apts.map { |s| [s.apt, s.apt] }
       render 'new'
     end
@@ -136,9 +137,9 @@ class UsersController < ApplicationController
 end
 
   def AddHistory(user, text)
-    puts "AUTHOR: #{current_user[:email]}" 
+    puts "AUTHOR: #{user[:email]}" 
     if(! user.history) then user.history = "" end
-    user.history = DateTime.now.strftime("%d/%m/%Y  %I:%M%p") + " by " + current_user[:email] + "\n" + text + "\n\n" + user.history
+    user.history = DateTime.now.strftime("%d/%m/%Y  %I:%M%p") + " by " + user[:email] + "\n" + text + "\n\n" + user.history
     user.save
   end
   

@@ -1,3 +1,4 @@
+<div class="container" style="padding: 100px;  background-color: coral; text-align: center">
 <form action="/saveCommenti" method="POST">
   <textarea name="commenti" data-remote="true" rows="40" cols="50">
     <%= @user.commenti %>
@@ -5,3 +6,4 @@
   <input type="hidden" name="userID" value="<%= @user.id %>">
   <button type="submit" >SAVE</button>
 </form>
+</div>
