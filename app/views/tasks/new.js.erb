@@ -1,3 +1,3 @@
 m = $('#modal');
-m.html('<%= j(render partial: 'new', locals: {task: @task, apts: @apts}) %>');
+m.html('<%= j(render partial: 'dettagli', locals: {task: @task, apts: @apts, is_new: true, is_update: false, is_view: false}) %>');
 m.modal('show');

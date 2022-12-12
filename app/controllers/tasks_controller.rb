@@ -4,17 +4,23 @@ class TasksController < ApplicationController
 def new
   #puts "Matteo --> New Task Modal Window"
   @task = Task.new
+  @task.email = $user.email
   @apts = $apts #Appartamenti.all.map(&:apt) #.map(|apt| apt.apt)
   puts @apts.inspect
 end
 
+def view
+  @task = Task.find(params[:format])
+  puts "TASK: "+ @task.inspect
+end
+  
 def clear
   #puts "Matteo --> Clear List"
   Task.destroy_all
   redirect_to '/home'
 end
 
-def edit
+def edit #Quando premuto il pulsante die EDIT dalla lista
   puts params.inspect
   #puts "Matteo --> Edit ToDo"
   @task = Task.find(params[:format])
@@ -67,19 +73,43 @@ def filter_apt
     @apts.push('tutti') #aggiungi la lista completa
 end
 
-def update
+def update #Richiamata quando utente modifica la Richiesta
   #puts "Matteo --> Update Task with params: #{params[:id]}"
-  puts task_params.inspect
   task = Task.find(params[:id])
 
-  puts 'URGENZA: ' 
-  puts task.urgenza && task.urgenza.strftime("%e/%m/%Y") 
-  puts task_params[:urgenza]
-  if((task.urgenza && task.urgenza.strftime("%e/%m/%Y")) != task_params[:urgenza])
-    puts "UPDATING: URGENZA"
-    AddRecord(task, 'history', 'URGENZA ' + ((task.urgenza && task.urgenza.strftime("%e/%m/%Y"))||'') + ' --> ' + (task_params[:urgenza] && task_params[:urgenza]))
+  puts task_params.inspect
+  puts task_params[:apt]
+  puts task.apt
+
+  #puts 'URGENZA: ' 
+  #puts task.urgenza && task.urgenza.strftime("%e/%m/%Y") 
+  #puts task_params[:urgenza]
+  if task.urgenza != task_params[:urgenza]
+    #puts "UPDATING: URGENZA"
+    AddRecord(task, 'history', 'URGENZA ' + task.urgenza + ' --> ' + task_params[:urgenza])
     task.urgenza = task_params[:urgenza]
   end
+  
+  if(task.oggetto != task_params[:oggetto])
+    AddRecord(task, 'history', 'OGGETTO '+ task.oggetto + ' --> ' + task_params[:oggetto])
+    task.oggetto = task_params[:oggetto]
+  end
+  
+  if(task.richiesta != task_params[:richiesta])
+    AddRecord(task, 'history', 'RICHIESTA '+ task.richiesta + ' --> ' + task_params[:richiesta])
+    task.richiesta = task_params[:richiesta]
+  end
+  
+  if(task.stato != task_params[:stato])
+    AddRecord(task, 'history', 'STATO '+ task.stato + ' --> ' + task_params[:stato])
+    task.stato = task_params[:stato]
+  end
+  
+  if !!task_params[:apt] && (task.apt != task_params[:apt]) #il gestore potrebbe cambiare l'appartamento
+    AddRecord(task, 'history', 'APT '+ task.apt + ' --> ' + task_params[:apt])
+    task.apt = task_params[:apt]
+  end
+  
   task.save
   redirect_to '/home'
 end
@@ -157,9 +187,9 @@ def task_params
 end
 
 def AddRecord(rec, type, text)
-  puts "ADD-RECORD:"
-  puts text
-  puts "AUTHOR: #{$user.email}" + $user.inspect
+  puts "ADD-RECORD: " + text
+  #puts text
+  #puts "AUTHOR: #{$user.email}" + $user.inspect
   if(! rec[type]) then rec[type] = "" end
   rec[type] = DateTime.now.strftime("%d/%m/%Y  %I:%M%p") + " by " + $user[:email] + "\n" + text.gsub(/\n\n+/,'\n') + "\n\n" + rec[type]
   rec.save

@@ -5,15 +5,20 @@ class ApplicationController < ActionController::Base
   before_action :authorize
   
   def current_user
-    $user != nil
+    $user
     #@current_user ||= User.find($user.id)  #User.find(session[:user_id]) if session[:user_id]
   end
   helper_method :current_user
 
   def is_admin
-    $user.stato == "ADMIN" || $user.id == 1
+    $is_admin
   end
   helper_method :is_admin
+
+  def is_gestore
+    $is_gestore
+  end
+  helper_method :is_gestore
 
   def authorize
     puts "AUTHORIZING..."

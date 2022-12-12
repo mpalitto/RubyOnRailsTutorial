@@ -24,6 +24,7 @@ Rails.application.routes.draw do
     get 'filter_apt', on: :member
     get 'clear', on: :member
     get 'history', on: :member
+    get 'view', on: :member
     get 'commenti', on: :member
     post 'saveCommenti', on: :member
   end

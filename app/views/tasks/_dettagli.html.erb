@@ -1,0 +1,38 @@
+<%# 
+Visualizza, modifica e permette l'inserimento dei dettagli di una Richiesta 
+a secoda del valore passato mediante le variabili locali  is_view, is_update, is_new] 
+%>
+<div class="container" style="padding: 30px;  background-color: coral; text-align: center">
+  <% if is_new %>
+    <h1>Nuova Richiesta</h1>
+  <% elsif is_update %>
+    <h1>Modifica Richiesta</h1>
+    <h3>richiedente: <%= task.email %></h3>
+  <% else %>
+    <h1>Visiona i dettagli della Richiesta</h1>
+    <h3>richiedente: <%= task.email %></h3>
+  <% end %>
+  <hr>
+<%= simple_form_for task, class: 'clearfix', remote: true  do |f| %>
+  <div style="font-size: 20px">
+    <%= f.text_field :oggetto, size: "28", value: task.oggetto, :disabled => is_view %>
+      <hr>
+    <%= f.text_area :richiesta, size: "50x10", value: task.richiesta, :disabled => is_view %>
+    <%= f.hidden_field :stato, :value => "new" %>
+    <%= f.input :urgenza, as: :string, :label => "Data Desiderata  _", style: 'margin-left: 10px;  display: inline;', input_html: {value: task.urgenza, class: 'datepicker', size: 8, :disabled => is_view} %> 
+      <hr>
+    <% if $is_gestore && task.email == $user.email && !is_view%>
+      <%= f.select(:apt, apts, :selected => task.apt) %>
+    <% end %>
+    <% if(!is_view) %>
+      <%= f.submit 'Save', class: 'btn btn-primary', style: 'display: inline;' %>
+    <% end %>
+</div>
+<% end %>
+<script>
+
+$( document ).ready(function() {
+    $('.datepicker').datepicker({format: "dd-mm-yyyy"});
+});
+
+</script>
